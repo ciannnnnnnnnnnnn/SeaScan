@@ -1,0 +1,12 @@
+{
+  "input_size": [
+    320,
+    320
+  ],
+  "pixel_range": "raw 0-255 (do NOT divide by 255)",
+  "confidence_threshold": 0.87,
+  "class_names": [
+    "not_seagrass",
+    "seagrass"
+  ]
+}

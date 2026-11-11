@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seagrass 3D library — 9 species</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0e2a2e;--mute:#5b7175;--line:#dfe7e5;--bg:#f5f8f6;--accent:#1f7a6b;--chip:#e8f2ee}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+  header{padding:22px 28px 10px}
+  header h1{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:26px;margin:0}
+  header p{margin:4px 0 0;color:var(--mute);font-size:13.5px}
+  .layout{display:grid;grid-template-columns:270px minmax(0,1fr) 360px;gap:20px;padding:12px 28px 28px;align-items:start}
+  nav{display:flex;flex-direction:column;gap:4px;position:sticky;top:12px}
+  nav button{appearance:none;text-align:left;border:1px solid transparent;background:none;border-radius:12px;padding:10px 12px;cursor:pointer;color:var(--ink);font:inherit}
+  nav button:hover{background:#fff;border-color:var(--line)}
+  nav button.on{background:#fff;border-color:var(--accent);box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  nav i{display:block;font-family:Fraunces,Georgia,serif;font-size:15.5px}
+  nav small{display:block;color:var(--mute);font-size:11.5px;margin-top:2px;line-height:1.35}
+  seagrass-viewer{--sg-height:min(72vh,640px);--sg-accent:#9fe0b4;--sg-font:Inter,system-ui,sans-serif}
+  .info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 20px 16px}
+  .info h2{font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:500;font-size:24px;margin:0}
+  .meta{color:var(--mute);font-size:12.5px;margin-top:4px}
+  .common{color:var(--accent);font-weight:600;font-size:13px;margin-top:6px}
+  .info p{font-size:13.5px;line-height:1.55}
+  .info h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:16px 0 6px}
+  .info ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.55}
+  dl{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;margin:0;font-size:13px}
+  dt{color:var(--mute)} dd{margin:0}
+  .alike{display:block;width:100%;text-align:left;appearance:none;border:1px solid var(--line);background:var(--chip);border-radius:10px;padding:9px 11px;margin-top:6px;cursor:pointer;font:inherit;font-size:12.5px;color:var(--ink);line-height:1.45}
+  .alike i{font-family:Fraunces,Georgia,serif}
+  .alike:hover{border-color:var(--accent)}
+  .note{font-size:11.5px;color:var(--mute);margin-top:14px;line-height:1.5}
+  @media (max-width:1100px){.layout{grid-template-columns:220px minmax(0,1fr)} .info{grid-column:1 / -1}}
+  @media (max-width:700px){
+    header{padding:16px 16px 6px}
+    .layout{grid-template-columns:1fr;padding:10px 16px 20px}
+    nav{position:static;flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+    nav button{flex:0 0 auto;max-width:200px;background:#fff;border-color:var(--line)}
+    nav small{display:none}
+    seagrass-viewer{--sg-height:62vh}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Seagrass 3D library</h1>
+  <p>Nine Indo-Pacific seagrasses as life-size 3D specimens. Drag to turn, scroll or pinch to zoom, and use <b>Labels</b> to name the parts.</p>
+</header>
+<div class="layout">
+  <nav id="list" aria-label="Species"></nav>
+  <main><seagrass-viewer id="viewer" base="./"></seagrass-viewer></main>
+  <aside class="info" id="info" aria-live="polite"></aside>
+</div>
+
+<script type="module">
+import './seagrass-viewer.js';
+const viewer = document.getElementById('viewer');
+const list = document.getElementById('list');
+const info = document.getElementById('info');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const data = await fetch('species.json').then(r => r.json());
+const byId = Object.fromEntries(data.species.map(s => [s.id, s]));
+
+list.innerHTML = data.species.map(s => `<button data-id="${s.id}"><i>${esc(s.scientificName)}</i><small>${esc(s.commonName || s.tagline)}</small></button>`).join('');
+list.addEventListener('click', e => { const b = e.target.closest('button'); if (b) location.hash = b.dataset.id; });
+
+function show(id){
+  const s = byId[id] || data.species[0];
+  viewer.species = s.id;
+  list.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.id === s.id));
+  const m = s.measurements;
+  info.innerHTML = `
+    <h2>${esc(s.scientificName)}</h2>
+    <div class="meta">${esc(s.family)}${s.synonyms.length ? ` · also listed as <i>${s.synonyms.map(esc).join(', ')}</i>` : ''}</div>
+    ${s.commonName ? `<div class="common">${esc(s.commonName)}</div>` : ''}
+    <p>${esc(s.description)}</p>
+    <h3>How to identify it</h3>
+    <ul>${s.idFeatures.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
+    <h3>Size</h3>
+    <dl><dt>Leaf length</dt><dd>${esc(m.leafLength)}</dd><dt>Leaf width</dt><dd>${esc(m.leafWidth)}</dd><dt>Rhizome</dt><dd>${esc(m.rhizome)}</dd></dl>
+    <h3>Where it grows</h3>
+    <p style="margin:0">${esc(s.habitat)}</p>
+    ${s.lookAlikes.length ? `<h3>Easily confused with</h3>${s.lookAlikes.map(a => `<button class="alike" data-id="${a.id}"><i>${esc(byId[a.id].scientificName)}</i><br>${esc(a.howToTell)}</button>`).join('')}` : ''}
+    <div class="note">The model shows one plant at life size: ${s.model.heightAboveSedimentCm} cm above the sediment and ${s.model.depthBelowSedimentCm} cm below it. Plants vary with habitat, so treat sizes as typical rather than exact.</div>`;
+  info.querySelectorAll('.alike').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.id; }));
+}
+window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+show(location.hash.slice(1));
+</script>
+</body>
+</html>

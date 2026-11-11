@@ -4,10 +4,27 @@
     <meta charset="UTF-8" />
     
     <!-- LINK TO YOUR LOGO IN THE PUBLIC FOLDER -->
-    <link rel="icon" type="image/png" href="/Gemini_Generated_Image_s1dywes1dywes1dy.png" />
+    <link rel="icon" type="image/png" href="/seascan-logo.png" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#020617" />
     <title>SeaScan | Seagrass ID System</title>
+    <!-- Apply the saved light/dark theme before the page paints (see src/lib/theme.js). -->
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('seascan-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.dataset.theme = t;
+        if (t === 'light') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f1f5f9');
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0"></script>
   </head>
   <body>
     <div id="root"></div>

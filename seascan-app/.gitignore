@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local environment (keys). Use .env.example as the template.
+.env
+.env.*
+!.env.example
+
+# Model test set (research data, ~160 MB): keep out of the repository.
+test_photos/

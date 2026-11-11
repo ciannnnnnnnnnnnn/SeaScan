@@ -1,156 +1,99 @@
-import React, { useState } from 'react';
-import { Database, Filter, Download, LineChart, Layers, RefreshCw, CheckCircle2 } from 'lucide-react';
+// src/components/ResearcherPanel.jsx
+// Researcher panel: review community sightings, export them as CSV, read
+// feedback and answer community questions. Species and station editing stays
+// with administrators (enforced by the database).
+import React, { useCallback, useEffect, useState } from 'react';
+import { LayoutDashboard, ShieldCheck, Inbox, MessageSquare, ClipboardList, MapPin, Leaf, Download, Activity } from 'lucide-react';
+import { usePortalTool } from './PortalTool';
+import PortalShell, { StatTile, Panel, buttonClass } from './staff/PortalShell';
+import SightingsReview from './staff/SightingsReview';
+import { FeedbackInbox, QuestionsInbox } from './staff/Inboxes';
+import IdentificationLog from './staff/IdentificationLog';
+import { fetchAllSightings, downloadCsv } from '../lib/api';
+import { useCatalog } from '../hooks/useCatalog';
 
-const datasetEntries = [
-  { id: 'DS-101', name: 'Coastal Seagrass Transects 2026', format: 'GeoJSON / CSV', records: '1,420', size: '12.4 MB', lastUpdated: '2026-09-01' },
-  { id: 'DS-102', name: 'CNN Classification Labels (v3)', format: 'JSON Dataset', records: '8,900', size: '148 MB', lastUpdated: '2026-08-28' },
-  { id: 'DS-103', name: 'Water Quality Parameters Q3', format: 'CSV', records: '310', size: '1.1 MB', lastUpdated: '2026-08-15' }
+const TABS = [
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard, heading: 'Research Overview', description: 'Community sighting data for Pujada Bay.' },
+  { id: 'sightings', label: 'Sighting Review', icon: ShieldCheck, permission: 'sightings.review', heading: 'Sighting Review', description: 'Approve, reject or delete sightings; export CSV.' },
+  { id: 'questions', label: 'Questions', icon: MessageSquare, permission: 'questions.answer', heading: 'Community Questions', description: 'Answer questions from the community.' },
+  { id: 'feedback', label: 'Feedback', icon: Inbox, permission: 'feedback.read', heading: 'User Feedback', description: 'Messages sent from the Help page.' },
+  { id: 'identifications', label: 'Identifications', icon: Activity, permission: 'identifications.read', heading: 'Identification Log', description: 'What the Scanner answered and how long it took. No photos or accounts are stored.' },
 ];
 
 export default function ResearchPanel() {
-  const [selectedDataset, setSelectedDataset] = useState(datasetEntries[0]);
-  const [filterQuery, setFilterQuery] = useState('');
-  const [exporting, setExporting] = useState(false);
+  const tool = usePortalTool('/researcher');
+  const { species, stations, speciesById } = useCatalog();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [all, setAll] = useState(null);
 
-  const handleExport = () => {
-    setExporting(true);
-    setTimeout(() => {
-      setExporting(false);
-    }, 1500);
-  };
+  const load = useCallback(async () => {
+    try { setAll(await fetchAllSightings('all')); } catch { setAll([]); }
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const pending = all?.filter((s) => s.status === 'pending').length;
+  const approved = all?.filter((s) => s.status === 'approved') ?? [];
+
+  // Approved sightings per species, for a quick overview.
+  const perSpecies = species.map((sp) => ({ sp, n: approved.filter((s) => s.species_id === sp.id).length }))
+    .sort((a, b) => b.n - a.n);
+  const max = Math.max(1, ...perSpecies.map((r) => r.n));
+
+  const exportStations = () => downloadCsv('seascan-stations.csv',
+    stations.flatMap((st) => (st.station_species.length ? st.station_species : [null]).map((l) => ({ st, l }))),
+    [
+      { label: 'station', value: ({ st }) => st.name },
+      { label: 'latitude', value: ({ st }) => st.latitude },
+      { label: 'longitude', value: ({ st }) => st.longitude },
+      { label: 'station_sources', value: ({ st }) => st.sources },
+      { label: 'species', value: ({ l }) => (l ? speciesById(l.species_id)?.scientific_name : '') },
+      { label: 'species_source', value: ({ l }) => l?.source },
+    ]);
+
+  const tab = TABS.find((t) => t.id === activeTab);
 
   return (
-    <div className="flex-1 p-8 bg-slate-950 text-slate-100 min-h-screen font-sans">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Database className="w-6 h-6 text-cyan-400" />
-              Research & Data Analytics Panel
-            </h1>
-            <p className="text-xs text-slate-400 mt-1">
-              Export raw spatial metrics, manage data splits, and perform environmental model comparisons.
-            </p>
+    <PortalShell
+      base="/researcher"
+      title="Research Panel"
+      subtitle="Data & Analytics"
+      accent="cyan"
+      tabs={TABS.map((t) => (t.id === 'sightings' ? { ...t, badge: pending } : t))}
+      activeTab={activeTab}
+      onTab={setActiveTab}
+      tool={tool}
+      heading={tab.heading}
+      description={tab.description}
+    >
+      {activeTab === 'overview' && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <StatTile label="Pending review" value={pending} icon={ClipboardList} tone="amber" />
+            <StatTile label="Approved sightings" value={all ? approved.length : null} icon={MapPin} tone="cyan" />
+            <StatTile label="Verified stations" value={stations.length} icon={Leaf} tone="emerald" />
           </div>
-
-          <button 
-            onClick={handleExport}
-            disabled={exporting}
-            className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-cyan-900/20 transition disabled:opacity-50"
-          >
-            {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            {exporting ? 'Exporting Package...' : 'Export Selected Dataset'}
-          </button>
-        </div>
-
-        {/* ANALYTICS HIGHLIGHTS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl flex items-center gap-4">
-            <div className="p-3 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20">
-              <LineChart className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 font-medium">Dataset Density Score</div>
-              <div className="text-xl font-bold text-white">0.87 Index</div>
-            </div>
-          </div>
-
-          <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl flex items-center gap-4">
-            <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
-              <Layers className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 font-medium">Validated Coordinates</div>
-              <div className="text-xl font-bold text-white">10,630 Points</div>
-            </div>
-          </div>
-
-          <div className="p-5 bg-slate-900 border border-slate-800 rounded-2xl flex items-center gap-4">
-            <div className="p-3 bg-teal-500/10 text-teal-400 rounded-xl border border-teal-500/20">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 font-medium">Model Baseline Drift</div>
-              <div className="text-xl font-bold text-white">&lt; 1.2% Low</div>
-            </div>
-          </div>
-        </div>
-
-        {/* DATASETS GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Filter className="w-4 h-4 text-cyan-400" />
-                Available Research Datasets
-              </h2>
-              <input 
-                type="text" 
-                placeholder="Search datasets..." 
-                value={filterQuery}
-                onChange={(e) => setFilterQuery(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
-              />
-            </div>
-
-            <div className="space-y-2">
-              {datasetEntries
-                .filter(d => d.name.toLowerCase().includes(filterQuery.toLowerCase()))
-                .map((ds) => (
-                  <div
-                    key={ds.id}
-                    onClick={() => setSelectedDataset(ds)}
-                    className={`p-4 rounded-xl border cursor-pointer transition flex items-center justify-between ${
-                      selectedDataset.id === ds.id 
-                        ? 'bg-cyan-950/40 border-cyan-500 text-white' 
-                        : 'bg-slate-950/40 border-slate-800 text-slate-400 hover:bg-slate-800/40'
-                    }`}
-                  >
-                    <div>
-                      <div className="text-xs font-bold text-slate-200">{ds.name}</div>
-                      <div className="text-[10px] text-slate-500 font-mono mt-0.5">{ds.id} • {ds.format}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs font-semibold text-cyan-400">{ds.records} Records</div>
-                      <div className="text-[10px] text-slate-500">{ds.size}</div>
-                    </div>
+          <Panel icon={Leaf} title="Approved sightings per species"
+            actions={<button onClick={exportStations} className={`${buttonClass} bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-1.5`}><Download className="w-3.5 h-3.5" /> Stations CSV</button>}>
+            <ul className="space-y-2.5">
+              {perSpecies.map(({ sp, n }) => (
+                <li key={sp.id}>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="italic text-slate-300">{sp.scientific_name}</span>
+                    <span className="text-slate-500 tabular-nums">{n}</span>
                   </div>
-                ))}
-            </div>
-          </div>
-
-          {/* METADATA INSPECTOR */}
-          <div className="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-bold text-white border-b border-slate-800 pb-4">
-              Dataset Metadata Inspector
-            </h2>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <span className="text-slate-500 block">Dataset Title</span>
-                <span className="font-semibold text-slate-200">{selectedDataset.name}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 block">Identifier</span>
-                <span className="font-mono text-cyan-400">{selectedDataset.id}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 block">Format</span>
-                <span className="text-slate-300">{selectedDataset.format}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 block">Total Recorded Samples</span>
-                <span className="text-slate-300">{selectedDataset.records}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 block">Last Modification Date</span>
-                <span className="text-slate-300">{selectedDataset.lastUpdated}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                  <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div className="h-full rounded-full bg-cyan-500/70" style={{ width: `${(n / max) * 100}%` }} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        </>
+      )}
+      {activeTab === 'sightings' && <SightingsReview onChanged={load} />}
+      {activeTab === 'questions' && <QuestionsInbox />}
+      {activeTab === 'feedback' && <FeedbackInbox canDelete={false} />}
+      {activeTab === 'identifications' && <IdentificationLog />}
+    </PortalShell>
   );
 }

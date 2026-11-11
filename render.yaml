@@ -1,0 +1,23 @@
+# Deploys the SeaScan Flask backend API (app.py) to Render.
+# Set the env values in the Render dashboard (see DEPLOYMENT.md, step 8).
+# One worker so the identification models are loaded once (the free plan has
+# 512 MB of memory); threads let it answer other requests while it identifies.
+services:
+  - type: web
+    name: seascan-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 60
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: INFERENCE_THREADS
+        value: "2"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

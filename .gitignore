@@ -1,0 +1,16 @@
+# Database backups contain real data - keep them out of git.
+backups/
+
+# Keys and local settings.
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Trained Keras models (35 MB each): only needed to rebuild server_models/.
+# Keep your own backup; the converted ONNX models in server_models/ are committed.
+model-keras/*.keras

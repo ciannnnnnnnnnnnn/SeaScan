@@ -1,0 +1,768 @@
+{
+  "version": 1,
+  "species": [
+    {
+      "id": "enhalus-acoroides",
+      "scientificName": "Enhalus acoroides",
+      "commonName": "Tape seagrass",
+      "family": "Hydrocharitaceae",
+      "synonyms": [],
+      "tagline": "The giant: very long strap leaves on a black-bristled rhizome",
+      "description": "The largest seagrass in the Indo-Pacific. Long, ribbon-like leaves with in-rolled edges rise from a thick rhizome wrapped in black fibrous bristles, which are the remains of old leaf sheaths. Stout, cord-like roots anchor it in soft sediment.",
+      "idFeatures": [
+        "Very long ribbon-like leaves, 30–150 cm",
+        "Leaf edges rolled inwards",
+        "Thick rhizome with long black bristles",
+        "Thick, cord-like roots"
+      ],
+      "measurements": {
+        "leafLength": "30–150 cm",
+        "leafWidth": "1.25–1.75 cm",
+        "rhizome": "Thick, about 1–1.5 cm (more with bristles)"
+      },
+      "habitat": "Shallow intertidal and subtidal sand or mud banks, often next to mangroves.",
+      "lookAlikes": [],
+      "model": {
+        "file": "models/enhalus-acoroides.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 92.1,
+        "depthBelowSedimentCm": 31.1,
+        "parts": [
+          "Leaves",
+          "LeafSheaths",
+          "Rhizome",
+          "Roots",
+          "Bristles",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "tip",
+          "label": "Leaf tip",
+          "note": "Smooth and rounded",
+          "position": "-0.01206m 0.92117m 0.01521m"
+        },
+        {
+          "id": "blade",
+          "label": "Leaf blade",
+          "note": "Long strap leaf with in-rolled edges",
+          "position": "-0.00669m 0.44569m -3e-05m"
+        },
+        {
+          "id": "sheath",
+          "label": "Leaf sheath",
+          "note": "Wraps the base of the shoot",
+          "position": "-0.00563m 0.02146m -0.00304m"
+        },
+        {
+          "id": "bristles",
+          "label": "Black bristles",
+          "note": "Fibres left by old leaf sheaths",
+          "position": "-0.15799m -0.08988m 0.00454m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Thick creeping underground stem",
+          "position": "0.19303m -0.05839m -0.01419m"
+        },
+        {
+          "id": "roots",
+          "label": "Roots",
+          "note": "Thick and cord-like",
+          "position": "0.09336m -0.21328m 0.03892m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.33692m 0m -0.44922m"
+        }
+      ]
+    },
+    {
+      "id": "thalassia-hemprichii",
+      "scientificName": "Thalassia hemprichii",
+      "commonName": "Pacific turtle grass",
+      "family": "Hydrocharitaceae",
+      "synonyms": [],
+      "tagline": "Curved, sickle-shaped leaves with tiny black tannin bars",
+      "description": "A dominant seagrass of Indo-Pacific reef flats. Its gently curved, sickle-shaped leaves carry short black bars of tannin cells, and it grows from a thick rhizome with scars between the shoots.",
+      "idFeatures": [
+        "Curved, sickle-shaped leaves",
+        "Short black bars of tannin cells in the leaf blade",
+        "Thick rhizome with scars between shoots",
+        "Rounded tip, sometimes finely serrated"
+      ],
+      "measurements": {
+        "leafLength": "10–40 cm",
+        "leafWidth": "0.4–1 cm",
+        "rhizome": "2–6 mm thick"
+      },
+      "habitat": "Common on shallow reef flats, from the mid-intertidal to the shallow subtidal.",
+      "lookAlikes": [
+        {
+          "id": "cymodocea-rotundata",
+          "howToTell": "Narrower, straighter leaves, no tannin bars and a smooth rhizome."
+        }
+      ],
+      "model": {
+        "file": "models/thalassia-hemprichii.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 19.9,
+        "depthBelowSedimentCm": 12.8,
+        "parts": [
+          "Leaves",
+          "LeafSheaths",
+          "Rhizome",
+          "LeafScars",
+          "Roots",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "tip",
+          "label": "Leaf tip",
+          "note": "Rounded, sometimes finely serrated",
+          "position": "-0.03752m 0.19926m 0.06454m"
+        },
+        {
+          "id": "blade",
+          "label": "Leaf blade",
+          "note": "Curved, with short black tannin bars",
+          "position": "-0.04029m 0.11053m 0.0263m"
+        },
+        {
+          "id": "sheath",
+          "label": "Leaf sheath",
+          "note": "Wraps the base of the shoot",
+          "position": "-0.04085m 0.02001m 0.01853m"
+        },
+        {
+          "id": "node",
+          "label": "Rhizome scar",
+          "note": "Scars mark the nodes between shoots",
+          "position": "0.02217m -0.0319m -0.0208m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Thick creeping underground stem",
+          "position": "0.16459m -0.03184m -0.0132m"
+        },
+        {
+          "id": "roots",
+          "label": "Roots",
+          "note": "Anchor the plant and take up nutrients",
+          "position": "0.07369m -0.06514m -0.00107m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.12402m 0m -0.16536m"
+        }
+      ]
+    },
+    {
+      "id": "cymodocea-rotundata",
+      "scientificName": "Cymodocea rotundata",
+      "commonName": null,
+      "family": "Cymodoceaceae",
+      "synonyms": [],
+      "tagline": "Narrow ribbon leaves with smooth, rounded tips",
+      "description": "A ribbon-leaved seagrass of shallow reef flats. The narrow, flat leaves end in a smooth rounded tip that is sometimes slightly notched. Shed leaf sheaths leave closed ring-shaped scars on the stem, and the rhizome is smooth.",
+      "idFeatures": [
+        "Flat strap leaves 2–4 mm wide",
+        "Smooth, rounded leaf tip",
+        "Pale purplish leaf sheath",
+        "Shed sheaths leave closed ring scars",
+        "Smooth rhizome"
+      ],
+      "measurements": {
+        "leafLength": "7–15 cm",
+        "leafWidth": "2–4 mm",
+        "rhizome": "Slender, about 1.5 mm"
+      },
+      "habitat": "Shallow reef flats, mostly intertidal.",
+      "lookAlikes": [
+        {
+          "id": "cymodocea-serrulata",
+          "howToTell": "Wider leaves (4–9 mm), a serrated tip and open, half-ring scars."
+        },
+        {
+          "id": "thalassia-hemprichii",
+          "howToTell": "Curved leaves with black tannin bars and a thick, scarred rhizome."
+        }
+      ],
+      "model": {
+        "file": "models/cymodocea-rotundata.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 19.4,
+        "depthBelowSedimentCm": 9.4,
+        "parts": [
+          "Leaves",
+          "LeafSheaths",
+          "ErectStems",
+          "Rhizome",
+          "LeafScars",
+          "Roots",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "tip",
+          "label": "Leaf tip",
+          "note": "Smooth and rounded",
+          "position": "-0.1168m 0.19347m 0.03464m"
+        },
+        {
+          "id": "blade",
+          "label": "Leaf blade",
+          "note": "Flat, 2–4 mm wide, 9–15 veins",
+          "position": "-0.11547m 0.10844m 0.01547m"
+        },
+        {
+          "id": "sheath",
+          "label": "Leaf sheath",
+          "note": "Pale purplish",
+          "position": "-0.08537m 0.02791m 0.00479m"
+        },
+        {
+          "id": "node",
+          "label": "Leaf scar",
+          "note": "Closed ring around the stem",
+          "position": "0.00058m -0.02263m -0.00015m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Smooth and slender",
+          "position": "0.12103m -0.02408m -0.00209m"
+        },
+        {
+          "id": "roots",
+          "label": "Roots",
+          "note": "1–3 branched roots per node",
+          "position": "0.06784m -0.05866m 0.02435m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.09261m 0m -0.12348m"
+        }
+      ]
+    },
+    {
+      "id": "cymodocea-serrulata",
+      "scientificName": "Cymodocea serrulata",
+      "commonName": null,
+      "family": "Cymodoceaceae",
+      "synonyms": [
+        "Oceana serrulata"
+      ],
+      "tagline": "Wider ribbon leaves with serrated tips and purple sheaths",
+      "description": "A ribbon-leaved seagrass with wider leaves than C. rotundata. The leaf tip is rounded but clearly toothed, and each shoot sits in a purple, broadly triangular sheath that narrows at the base. Shed sheaths leave open, half-ring scars.",
+      "idFeatures": [
+        "Strap leaves 4–9 mm wide",
+        "Rounded, serrated leaf tip",
+        "Purple, broadly triangular leaf sheath",
+        "Leaf scars do not form a full ring"
+      ],
+      "measurements": {
+        "leafLength": "6–15 cm",
+        "leafWidth": "4–9 mm",
+        "rhizome": "Stout"
+      },
+      "habitat": "Shallow subtidal reef flats and sand banks.",
+      "lookAlikes": [
+        {
+          "id": "cymodocea-rotundata",
+          "howToTell": "Narrower leaves (2–4 mm), a smooth tip and closed ring scars."
+        }
+      ],
+      "model": {
+        "file": "models/cymodocea-serrulata.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 18.3,
+        "depthBelowSedimentCm": 12.8,
+        "parts": [
+          "Leaves",
+          "LeafSheaths",
+          "ErectStems",
+          "Rhizome",
+          "LeafScars",
+          "Roots",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "tip",
+          "label": "Leaf tip",
+          "note": "Rounded with obvious teeth",
+          "position": "-0.13215m 0.1831m 0.01173m"
+        },
+        {
+          "id": "blade",
+          "label": "Leaf blade",
+          "note": "4–9 mm wide, 13–17 veins",
+          "position": "-0.13193m 0.10018m 0.00282m"
+        },
+        {
+          "id": "sheath",
+          "label": "Leaf sheath",
+          "note": "Purple and broadly triangular",
+          "position": "-0.09563m 0.02511m 0.00088m"
+        },
+        {
+          "id": "node",
+          "label": "Leaf scar",
+          "note": "Open, half-ring scar",
+          "position": "0.01077m -0.02628m 0.00437m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Stout creeping stem",
+          "position": "0.13879m -0.02695m 0.001m"
+        },
+        {
+          "id": "roots",
+          "label": "Roots",
+          "note": "Branched roots at each node",
+          "position": "0.06919m -0.08384m 0.04018m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.10167m 0m -0.13556m"
+        }
+      ]
+    },
+    {
+      "id": "halodule-pinifolia",
+      "scientificName": "Halodule pinifolia",
+      "commonName": null,
+      "family": "Cymodoceaceae",
+      "synonyms": [],
+      "tagline": "Very fine leaves with a black central vein",
+      "description": "A fine, delicate seagrass with leaves about a millimetre wide. A single black central vein runs up the leaf and splits in two at the rounded tip. The pale rhizome carries clean black leaf scars.",
+      "idFeatures": [
+        "Very fine leaves, about 1 mm wide",
+        "One black central vein that splits at the tip",
+        "Rounded leaf tip",
+        "Pale rhizome with black leaf scars"
+      ],
+      "measurements": {
+        "leafLength": "up to about 20 cm",
+        "leafWidth": "about 0.6–1.2 mm",
+        "rhizome": "Thin and pale"
+      },
+      "habitat": "Intertidal sand banks.",
+      "lookAlikes": [
+        {
+          "id": "halodule-uninervis",
+          "howToTell": "Usually larger, with a three-pointed (trident) leaf tip."
+        }
+      ],
+      "model": {
+        "file": "models/halodule-pinifolia.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 20.0,
+        "depthBelowSedimentCm": 6.2,
+        "parts": [
+          "Leaves",
+          "LeafSheaths",
+          "ErectStems",
+          "Rhizome",
+          "LeafScars",
+          "Roots",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "tip",
+          "label": "Leaf tip",
+          "note": "Rounded; the black vein splits here",
+          "position": "-0.03993m 0.20017m 0.01998m"
+        },
+        {
+          "id": "blade",
+          "label": "Leaf blade",
+          "note": "About 1 mm wide, one dark central vein",
+          "position": "-0.03327m 0.10189m 0.00715m"
+        },
+        {
+          "id": "sheath",
+          "label": "Leaf sheath",
+          "note": "Wraps the base of the shoot",
+          "position": "-0.07661m 0.015m 0.01133m"
+        },
+        {
+          "id": "node",
+          "label": "Leaf scar",
+          "note": "Clean black scar on a pale rhizome",
+          "position": "0.01483m -0.01229m 0.01115m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Thin and pale",
+          "position": "0.09213m -0.01187m 0.00562m"
+        },
+        {
+          "id": "roots",
+          "label": "Roots",
+          "note": "Fine roots at each node",
+          "position": "0.03764m -0.03767m 0.01304m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.07908m 0m -0.10544m"
+        }
+      ]
+    },
+    {
+      "id": "halodule-uninervis",
+      "scientificName": "Halodule uninervis",
+      "commonName": "Narrowleaf seagrass",
+      "family": "Cymodoceaceae",
+      "synonyms": [],
+      "tagline": "Narrow leaves with a three-pointed tip",
+      "description": "A narrow-leaved, fast-spreading seagrass and a preferred food of dugongs. Each leaf has a single central vein and ends in a distinctive three-pointed (trident) tip. The rhizome is pale ivory with black leaf scars.",
+      "idFeatures": [
+        "Narrow flat leaves with one central vein",
+        "Three-pointed (trident) leaf tip",
+        "Pale ivory rhizome with black leaf scars"
+      ],
+      "measurements": {
+        "leafLength": "up to about 15 cm",
+        "leafWidth": "0.25–3.5 mm (usually about 1 mm)",
+        "rhizome": "Thin, pale ivory"
+      },
+      "habitat": "Shallow and intertidal sand or mud banks.",
+      "lookAlikes": [
+        {
+          "id": "halodule-pinifolia",
+          "howToTell": "Finer leaves, with a rounded tip where the black central vein splits."
+        }
+      ],
+      "model": {
+        "file": "models/halodule-uninervis.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 15.1,
+        "depthBelowSedimentCm": 6.4,
+        "parts": [
+          "Leaves",
+          "LeafSheaths",
+          "ErectStems",
+          "Rhizome",
+          "LeafScars",
+          "Roots",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "tip",
+          "label": "Leaf tip",
+          "note": "Three points (trident)",
+          "position": "-0.06091m 0.15114m 0.01649m"
+        },
+        {
+          "id": "blade",
+          "label": "Leaf blade",
+          "note": "Narrow, one central vein",
+          "position": "-0.05645m 0.08033m 0.00408m"
+        },
+        {
+          "id": "sheath",
+          "label": "Leaf sheath",
+          "note": "Wraps the base of the shoot",
+          "position": "-0.07283m 0.01584m -0.00796m"
+        },
+        {
+          "id": "node",
+          "label": "Leaf scar",
+          "note": "Black scar on an ivory rhizome",
+          "position": "0.01667m -0.01283m 0.00054m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Thin and pale ivory",
+          "position": "0.09208m -0.01303m -0.00198m"
+        },
+        {
+          "id": "roots",
+          "label": "Roots",
+          "note": "Fine roots at each node",
+          "position": "0.03412m -0.03459m -0.00501m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.07173m 0m -0.09564m"
+        }
+      ]
+    },
+    {
+      "id": "halophila-minor",
+      "scientificName": "Halophila minor",
+      "commonName": null,
+      "family": "Hydrocharitaceae",
+      "synonyms": [],
+      "tagline": "Tiny oval leaves in pairs, fewer than 8 pairs of cross veins",
+      "description": "A very small seagrass with oval leaves in pairs on short stalks. It looks like a miniature Halophila ovalis, but its leaves are smaller and have fewer than 8 pairs of cross veins. A pair of transparent scales protects each node.",
+      "idFeatures": [
+        "Small oval leaves in pairs",
+        "Fewer than 8 pairs of cross veins",
+        "No hairs on the leaf surface",
+        "Thin, fragile rhizome"
+      ],
+      "measurements": {
+        "leafLength": "about 8–13 mm",
+        "leafWidth": "about 3–5 mm",
+        "rhizome": "Very thin"
+      },
+      "habitat": "Often intertidal; lower intertidal to shallow subtidal on muddy sand.",
+      "lookAlikes": [
+        {
+          "id": "halophila-ovalis",
+          "howToTell": "Bigger leaves (1–4 cm) with 8 or more pairs of cross veins."
+        }
+      ],
+      "model": {
+        "file": "models/halophila-minor.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 1.4,
+        "depthBelowSedimentCm": 5.5,
+        "parts": [
+          "Petioles",
+          "LeafBlades",
+          "Scales",
+          "Rhizome",
+          "Roots",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "blade",
+          "label": "Leaf blade",
+          "note": "Small oval, fewer than 8 pairs of cross veins",
+          "position": "-0.04904m 0.00787m 0.00063m"
+        },
+        {
+          "id": "petiole",
+          "label": "Petiole",
+          "note": "Short leaf stalk",
+          "position": "-0.01972m 0.00043m -0.00167m"
+        },
+        {
+          "id": "scales",
+          "label": "Scales",
+          "note": "A transparent pair at each node",
+          "position": "0.01783m -0.00409m 0.00233m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Very thin and fragile",
+          "position": "0.06886m -0.00637m -0.00074m"
+        },
+        {
+          "id": "roots",
+          "label": "Root",
+          "note": "One per node",
+          "position": "0.04654m -0.0413m 0.00323m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.0551m 0m -0.07347m"
+        }
+      ]
+    },
+    {
+      "id": "halophila-ovalis",
+      "scientificName": "Halophila ovalis",
+      "commonName": "Spoon grass, paddle weed",
+      "family": "Hydrocharitaceae",
+      "synonyms": [],
+      "tagline": "Paddle-shaped leaves in pairs on long stalks",
+      "description": "A small, fast-colonising seagrass with oval, paddle-shaped leaves in pairs on slender stalks. Each leaf has a midrib, a vein running just inside the edge, and 8 or more pairs of cross veins. It is a preferred food of dugongs.",
+      "idFeatures": [
+        "Oval leaves in pairs on slender stalks",
+        "8 or more pairs of cross veins",
+        "No hairs on the leaf surface",
+        "Two transparent scales at each node"
+      ],
+      "measurements": {
+        "leafLength": "1–4 cm",
+        "leafWidth": "0.5–2 cm",
+        "rhizome": "Thin, smooth and pale"
+      },
+      "habitat": "Intertidal to subtidal; a common early coloniser.",
+      "lookAlikes": [
+        {
+          "id": "halophila-minor",
+          "howToTell": "Smaller leaves (about 1 cm) with fewer than 8 pairs of cross veins."
+        }
+      ],
+      "model": {
+        "file": "models/halophila-ovalis.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 3.9,
+        "depthBelowSedimentCm": 9.7,
+        "parts": [
+          "Petioles",
+          "LeafBlades",
+          "Scales",
+          "Rhizome",
+          "Roots",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "blade",
+          "label": "Leaf blade",
+          "note": "Oval, 8 or more pairs of cross veins",
+          "position": "-0.07349m 0.03254m -0.00449m"
+        },
+        {
+          "id": "petiole",
+          "label": "Petiole",
+          "note": "Slender leaf stalk, 1–4.5 cm",
+          "position": "-0.01091m 0.01003m -0.00797m"
+        },
+        {
+          "id": "scales",
+          "label": "Scales",
+          "note": "A transparent pair at each node",
+          "position": "0.06231m -0.00452m -0.00584m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Thin, smooth and pale",
+          "position": "0.11526m -0.00799m -0.00976m"
+        },
+        {
+          "id": "roots",
+          "label": "Root",
+          "note": "One per node",
+          "position": "0.04092m -0.05755m -0.00082m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.08939m 0m -0.11918m"
+        }
+      ]
+    },
+    {
+      "id": "syringodium-isoetifolium",
+      "scientificName": "Syringodium isoetifolium",
+      "commonName": null,
+      "family": "Cymodoceaceae",
+      "synonyms": [],
+      "tagline": "Round, spaghetti-like leaves",
+      "description": "The only seagrass in this set with cylindrical leaves: round in cross-section, like spaghetti, and tapering to a point. Each node carries a short erect stem with 2–3 leaves and 1–3 roots.",
+      "idFeatures": [
+        "Cylindrical (round) leaves",
+        "Leaf tip tapers to a point",
+        "2–3 leaves per shoot",
+        "Leaf sheath often tinged red"
+      ],
+      "measurements": {
+        "leafLength": "7–30 cm",
+        "leafWidth": "about 1–2 mm across",
+        "rhizome": "Slender, 1–2.5 mm"
+      },
+      "habitat": "Shallow subtidal reef flats and sand banks.",
+      "lookAlikes": [],
+      "model": {
+        "file": "models/syringodium-isoetifolium.glb",
+        "units": "metres (life size)",
+        "animation": "Sway",
+        "heightAboveSedimentCm": 25.2,
+        "depthBelowSedimentCm": 9.2,
+        "parts": [
+          "Leaves",
+          "LeafSheaths",
+          "ErectStems",
+          "Rhizome",
+          "LeafScars",
+          "Roots",
+          "Sediment"
+        ]
+      },
+      "hotspots": [
+        {
+          "id": "tip",
+          "label": "Leaf tip",
+          "note": "Tapers to a point",
+          "position": "-0.03895m 0.25241m 0.0161m"
+        },
+        {
+          "id": "blade",
+          "label": "Leaf",
+          "note": "Round in cross-section",
+          "position": "-0.04395m 0.12964m 0.00243m"
+        },
+        {
+          "id": "sheath",
+          "label": "Leaf sheath",
+          "note": "Often tinged red",
+          "position": "-0.09294m 0.02095m 0.0047m"
+        },
+        {
+          "id": "node",
+          "label": "Node scar",
+          "note": "A shoot and roots at every node",
+          "position": "0.00755m -0.01975m -0.00106m"
+        },
+        {
+          "id": "rhizome",
+          "label": "Rhizome",
+          "note": "Slender, internodes 1.5–3.5 cm",
+          "position": "0.11899m -0.02167m -0.00049m"
+        },
+        {
+          "id": "roots",
+          "label": "Roots",
+          "note": "1–3 per node",
+          "position": "0.07181m -0.06845m 0.01131m"
+        },
+        {
+          "id": "sediment",
+          "label": "Sediment surface",
+          "note": "",
+          "position": "-0.1078m 0m -0.14373m"
+        }
+      ]
+    }
+  ]
+}

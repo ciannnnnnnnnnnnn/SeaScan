@@ -1,0 +1,58 @@
+{
+  "input_size": [
+    320,
+    320
+  ],
+  "pixel_range": "raw 0-255 (do NOT divide by 255)",
+  "confidence_threshold": 0.87,
+  "class_names": [
+    "not_seagrass",
+    "seagrass"
+  ],
+  "test": [
+    {
+      "t": 0.5,
+      "seagrass_accepted": 0.9899799599198397,
+      "non_seagrass_rejected": 0.9966159052453468,
+      "precision": 0.9959677419354839,
+      "f1": 0.9929648241206029,
+      "tp": 494,
+      "fn": 5,
+      "tn": 589,
+      "fp": 2
+    },
+    {
+      "t": 0.7,
+      "seagrass_accepted": 0.9819639278557114,
+      "non_seagrass_rejected": 0.9983079526226735,
+      "precision": 0.9979633401221996,
+      "f1": 0.9898989898989898,
+      "tp": 490,
+      "fn": 9,
+      "tn": 590,
+      "fp": 1
+    },
+    {
+      "t": 0.87,
+      "seagrass_accepted": 0.9719438877755511,
+      "non_seagrass_rejected": 1.0,
+      "precision": 1.0,
+      "f1": 0.9857723577235772,
+      "tp": 485,
+      "fn": 14,
+      "tn": 591,
+      "fp": 0
+    },
+    {
+      "t": 0.9,
+      "seagrass_accepted": 0.9719438877755511,
+      "non_seagrass_rejected": 1.0,
+      "precision": 1.0,
+      "f1": 0.9857723577235772,
+      "tp": 485,
+      "fn": 14,
+      "tn": 591,
+      "fp": 0
+    }
+  ]
+}

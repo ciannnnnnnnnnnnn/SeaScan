@@ -1,0 +1,20 @@
+{
+  "input_size": [
+    320,
+    320
+  ],
+  "pixel_range": "raw 0-255 (do NOT divide by 255)",
+  "confidence_threshold": 0.7,
+  "class_names": [
+    "Cymodocea_rotundata",
+    "Cymodocea_serrulata",
+    "Enhalus_acoroides",
+    "Halodule_pinifolia",
+    "Halodule_uninervis",
+    "Halophila_minor",
+    "Halophila_ovalis",
+    "Syringodium_isoetifolium",
+    "Thalassia_hemprichii"
+  ],
+  "weights": "float16 (quantized from float32 by scripts/quantize_models.mjs)"
+}

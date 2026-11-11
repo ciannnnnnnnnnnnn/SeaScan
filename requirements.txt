@@ -1,0 +1,12 @@
+# SeaScan Flask backend API (app.py) and server-side identification
+# (seascan_inference.py). TensorFlow is NOT needed: the models run with
+# ONNX Runtime. Converting the Keras models needs a separate environment,
+# see scripts/convert_models_onnx.py.
+flask>=3.0,<4
+flask-cors>=4.0,<7
+requests>=2.31,<3
+python-dotenv>=1.0,<2
+gunicorn>=22,<24
+numpy>=1.26,<3
+pillow>=10.3,<13
+onnxruntime>=1.20,<2
