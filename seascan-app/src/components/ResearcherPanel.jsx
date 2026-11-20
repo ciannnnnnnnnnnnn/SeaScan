@@ -67,7 +67,7 @@ export default function ResearchPanel() {
     >
       {activeTab === 'overview' && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             <StatTile label="Pending review" value={pending} icon={ClipboardList} tone="amber" />
             <StatTile label="Approved sightings" value={all ? approved.length : null} icon={MapPin} tone="cyan" />
             <StatTile label="Verified stations" value={stations.length} icon={Leaf} tone="emerald" />

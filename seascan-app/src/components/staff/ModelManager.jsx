@@ -108,7 +108,7 @@ export default function ModelManager() {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatTile label="Overall test accuracy" value={`${MODEL_METRICS.overallAccuracy}%`} icon={BarChart3} tone="teal"
           hint={`Every species ≥ ${MODEL_METRICS.minimumPerSpecies}% on all four metrics`} />
         <StatTile label="Species threshold" value={settings ? pct(settings.species_threshold) : '70%'} icon={SlidersHorizontal} tone="amber"

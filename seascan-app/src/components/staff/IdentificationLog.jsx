@@ -74,7 +74,7 @@ export default function IdentificationLog() {
     <>
       <Alert>{error}</Alert>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatTile label="Identifications logged" value={stats?.total ?? (rows ? 0 : null)} icon={Activity} tone="teal"
           hint={rows?.length === LIMIT ? `Latest ${LIMIT} shown` : 'Recorded by the SeaScan API'} />
         <StatTile label="Median time" value={stats ? seconds(stats.median) : null} icon={Timer} tone="cyan"
@@ -96,7 +96,7 @@ export default function IdentificationLog() {
             {rows ? 'No identifications logged yet. Results appear here once the SeaScan API is deployed and the Scanner is used.' : 'Loading…'}
           </p>
         ) : (
-          <div className="overflow-x-auto -mx-5 md:-mx-6">
+          <div className="overflow-x-auto -mx-4 sm:-mx-5 md:-mx-6">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-950/60 text-slate-500 uppercase text-[11px] tracking-wider border-y border-slate-800">
                 <tr>
@@ -123,8 +123,8 @@ export default function IdentificationLog() {
         {!rows?.length ? (
           <p className="text-sm text-slate-500 text-center py-6">{rows ? 'Nothing logged yet.' : 'Loading…'}</p>
         ) : (
-          <div className="overflow-x-auto -mx-5 md:-mx-6">
-            <table className="w-full text-left text-xs">
+          <div className="stack-wrap overflow-x-auto -mx-4 sm:-mx-5 md:-mx-6">
+            <table className="stack-table w-full text-left text-xs">
               <thead className="bg-slate-950/60 text-slate-500 uppercase text-[11px] tracking-wider border-y border-slate-800">
                 <tr>
                   <th className="py-3 px-5">When</th>
@@ -139,11 +139,11 @@ export default function IdentificationLog() {
                 {rows.slice(0, 25).map((r) => (
                   <tr key={r.id}>
                     <td className="py-3 px-5 text-slate-500">{new Date(r.created_at).toLocaleString()}</td>
-                    <td className="py-3 px-3 text-slate-300">{OUTCOME_LABEL[r.outcome]}</td>
-                    <td className="py-3 px-3 italic text-slate-200">{r.species_label?.replace(/_/g, ' ') || '—'}</td>
-                    <td className="py-3 px-3 text-slate-400 tabular-nums">{r.confidence === null ? '—' : `${Number(r.confidence).toFixed(1)}%`}</td>
-                    <td className={`py-3 px-3 tabular-nums ${r.duration_ms > TARGET_MS ? 'text-amber-300' : 'text-slate-400'}`}>{seconds(r.duration_ms)}</td>
-                    <td className="py-3 px-5 text-slate-500 capitalize">{r.device || '—'}</td>
+                    <td data-label="Result" className="py-3 px-3 text-slate-300">{OUTCOME_LABEL[r.outcome]}</td>
+                    <td data-label="Species" className="py-3 px-3 italic text-slate-200">{r.species_label?.replace(/_/g, ' ') || '—'}</td>
+                    <td data-label="Confidence" className="py-3 px-3 text-slate-400 tabular-nums">{r.confidence === null ? '—' : `${Number(r.confidence).toFixed(1)}%`}</td>
+                    <td data-label="Time" className={`py-3 px-3 tabular-nums ${r.duration_ms > TARGET_MS ? 'text-amber-300' : 'text-slate-400'}`}>{seconds(r.duration_ms)}</td>
+                    <td data-label="Device" className="py-3 px-5 text-slate-500 capitalize">{r.device || '—'}</td>
                   </tr>
                 ))}
               </tbody>

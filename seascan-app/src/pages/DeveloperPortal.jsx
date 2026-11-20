@@ -124,7 +124,7 @@ export default function DeveloperPortal() {
   };
 
   return (
-    <div className="h-screen flex min-w-0 w-full overflow-hidden bg-slate-950 text-slate-100 font-sans antialiased">
+    <div className="h-dvh flex min-w-0 w-full overflow-hidden bg-slate-950 text-slate-100 font-sans antialiased">
       {/* SIDEBAR NAVIGATION - pinned to the viewport; only the nav list scrolls */}
       <aside className="w-64 h-full bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
         <div className="p-5 border-b border-slate-800 flex items-center gap-3">

@@ -95,8 +95,8 @@ function ScanHistory({ user }) {
           </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="stack-wrap overflow-x-auto">
+          <table className="stack-table w-full text-left text-xs">
             <thead className="text-slate-500 text-[11px] uppercase tracking-wider border-b border-slate-800">
               <tr>
                 <th className="py-2.5 pr-4">When</th>
@@ -114,21 +114,21 @@ function ScanHistory({ user }) {
                 const o = OUTCOME[r.outcome];
                 return (
                   <tr key={r.id}>
-                    <td className="py-3 pr-4 text-slate-500 whitespace-nowrap">{new Date(r.created_at).toLocaleString()}</td>
-                    <td className="py-3 pr-4">
+                    <td data-label="When" className="py-3 pr-4 text-slate-500 whitespace-nowrap">{new Date(r.created_at).toLocaleString()}</td>
+                    <td data-label="Result" className="py-3 pr-4">
                       <span className={`px-2 py-0.5 rounded-full border text-[11px] font-semibold ${o.cls}`}>{o.label}</span>
                     </td>
-                    <td className="py-3 pr-4 italic text-slate-200">
+                    <td data-label="Species" className="py-3 pr-4 italic text-slate-200">
                       {sp ? <Link to={`/library/${sp.slug}`} className="hover:text-teal-300 underline-offset-2 hover:underline">{name}</Link> : (name || '—')}
                     </td>
-                    <td className="py-3 pr-4 text-slate-400 tabular-nums">{r.confidence === null ? '—' : `${Number(r.confidence).toFixed(1)}%`}</td>
-                    <td className="py-3 pr-4 text-slate-500">
+                    <td data-label="Confidence" className="py-3 pr-4 text-slate-400 tabular-nums">{r.confidence === null ? '—' : `${Number(r.confidence).toFixed(1)}%`}</td>
+                    <td data-label="Where" className="py-3 pr-4 text-slate-500">
                       <span className="inline-flex items-center gap-1">
                         {r.method === 'server' ? <Server className="w-3.5 h-3.5" /> : <Smartphone className="w-3.5 h-3.5" />}
                         {r.method === 'server' ? 'SeaScan server' : 'This device'}
                       </span>
                     </td>
-                    <td className="py-3 text-right">
+                    <td data-label="" className="py-3 text-right">
                       <button onClick={() => remove(r.id)} aria-label="Delete this scan" className="p-1.5 rounded-lg text-slate-500 hover:text-rose-300 hover:bg-rose-950/40">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -181,8 +181,8 @@ function MySightings({ user }) {
       ) : rows.length === 0 ? (
         <p className="text-sm text-slate-500 py-8 text-center">No sightings yet.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="stack-wrap overflow-x-auto">
+          <table className="stack-table w-full text-left text-xs">
             <thead className="text-slate-500 text-[11px] uppercase tracking-wider border-b border-slate-800">
               <tr>
                 <th className="py-2.5 pr-4">Species</th>
@@ -195,17 +195,17 @@ function MySightings({ user }) {
             <tbody className="divide-y divide-slate-800/60">
               {rows.map((s) => (
                 <tr key={s.id}>
-                  <td className="py-3 pr-4 italic text-slate-200">{speciesById(s.species_id)?.scientific_name || '—'}</td>
-                  <td className="py-3 pr-4 font-mono text-slate-400">
+                  <td data-label="Species" className="py-3 pr-4 italic text-slate-200">{speciesById(s.species_id)?.scientific_name || '—'}</td>
+                  <td data-label="Location" className="py-3 pr-4 font-mono text-slate-400">
                     {Number(s.latitude).toFixed(4)}, {Number(s.longitude).toFixed(4)}
                     {s.location_source === 'demo' && <span className="ml-1.5 font-sans text-amber-300/80">(demo)</span>}
                   </td>
-                  <td className="py-3 pr-4 text-slate-500">{s.observed_on}</td>
-                  <td className="py-3 pr-4">
+                  <td data-label="Observed" className="py-3 pr-4 text-slate-500">{s.observed_on}</td>
+                  <td data-label="Status" className="py-3 pr-4">
                     <span className={`px-2 py-0.5 rounded-full border text-[11px] font-semibold capitalize ${STATUS_CHIP[s.status]}`}>{s.status}</span>
                     {s.status === 'rejected' && s.review_note && <span className="block mt-1 text-slate-500">{s.review_note}</span>}
                   </td>
-                  <td className="py-3 text-right">
+                  <td data-label="" className="py-3 text-right">
                     {s.status === 'pending' && (
                       <button onClick={() => remove(s)} aria-label="Delete this sighting" className="p-1.5 rounded-lg text-slate-500 hover:text-rose-300 hover:bg-rose-950/40">
                         <Trash2 className="w-3.5 h-3.5" />
@@ -345,13 +345,13 @@ export default function AccountPage() {
           </div>}
         </div>
 
-        <div role="tablist" className="flex gap-1 border-b border-slate-800 overflow-x-auto">
+        <div role="tablist" className="grid grid-cols-3 sm:flex sm:gap-1 border-b border-slate-800">
           {TABS.map((t) => {
             const Icon = t.icon;
             const active = tab === t.id;
             return (
               <button key={t.id} role="tab" aria-selected={active} onClick={() => setTab(t.id)}
-                className={`px-4 py-3 text-sm font-semibold border-b-2 -mb-px flex items-center gap-2 whitespace-nowrap transition-colors ${
+                className={`px-1.5 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold leading-tight text-center border-b-2 -mb-px flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 sm:whitespace-nowrap transition-colors ${
                   active ? 'border-teal-400 text-teal-300' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
                 <Icon className="w-4 h-4" /> {t.label}
               </button>
@@ -359,7 +359,7 @@ export default function AccountPage() {
           })}
         </div>
 
-        <section className="bg-slate-900 rounded-2xl border border-slate-800 p-5 sm:p-6">
+        <section className="bg-slate-900 rounded-2xl border border-slate-800 p-4 sm:p-6">
           {tab === 'scans' && <ScanHistory user={user} />}
           {tab === 'sightings' && <MySightings user={user} />}
           {tab === 'profile' && <ProfileSettings user={user} refreshUser={refreshUser} />}

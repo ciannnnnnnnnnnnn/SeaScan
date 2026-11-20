@@ -192,10 +192,10 @@ export function UsersManager({ onCount }) {
   return (
     <Panel icon={Users} title="Users and roles"
       description="Change a role or mark test accounts. To delete an account, use Supabase Dashboard > Authentication > Users (see DEPLOYMENT.md)."
-      actions={<input className={`${inputClass} w-56`} placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />}>
+      actions={<input className={`${inputClass} w-full sm:w-56`} placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />}>
       <Alert>{error}</Alert>
-      <div className="overflow-x-auto -mx-5 md:-mx-6">
-        <table className="w-full text-left text-xs">
+      <div className="stack-wrap overflow-x-auto -mx-4 sm:-mx-5 md:-mx-6">
+        <table className="stack-table w-full text-left text-xs">
           <thead className="bg-slate-950/60 text-slate-500 text-xs border-y border-slate-800">
             <tr>
               <th className="py-3 px-5">Account</th>
@@ -213,18 +213,18 @@ export function UsersManager({ onCount }) {
                   <span className="text-slate-200 font-semibold">{r.email}</span>
                   {r.display_name && <span className="block text-slate-500">{r.display_name}</span>}
                 </td>
-                <td className="py-3 px-3 text-slate-400 capitalize">{r.user_type}</td>
-                <td className="py-3 px-3">
+                <td data-label="Type" className="py-3 px-3 text-slate-400 capitalize">{r.user_type}</td>
+                <td data-label="Role" className="py-3 px-3">
                   <select value={r.role} onChange={(e) => update(r, { role: e.target.value })}
                     className="px-2 py-1 bg-slate-950 border border-slate-800 rounded-lg text-slate-200">
                     {ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
                   </select>
                 </td>
-                <td className="py-3 px-3">
+                <td data-label="Test account" className="py-3 px-3">
                   <input type="checkbox" aria-label="Test account" checked={r.is_test_account} onChange={(e) => update(r, { is_test_account: e.target.checked })} />
                 </td>
-                <td className="py-3 px-3 text-slate-400 tabular-nums">{r.sighting_count}</td>
-                <td className="py-3 px-5 text-slate-500">{r.last_sign_in_at ? new Date(r.last_sign_in_at).toLocaleDateString() : 'never'}</td>
+                <td data-label="Sightings" className="py-3 px-3 text-slate-400 tabular-nums">{r.sighting_count}</td>
+                <td data-label="Last sign-in" className="py-3 px-5 text-slate-500">{r.last_sign_in_at ? new Date(r.last_sign_in_at).toLocaleDateString() : 'never'}</td>
               </tr>
             ))}
           </tbody>

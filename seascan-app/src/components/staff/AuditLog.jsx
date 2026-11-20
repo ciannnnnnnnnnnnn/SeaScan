@@ -97,8 +97,8 @@ export default function AuditLog() {
       ) : rows.length === 0 ? (
         <p className="text-sm text-slate-500 text-center py-6">No entries yet.</p>
       ) : (
-        <div className="overflow-x-auto -mx-5 md:-mx-6">
-          <table className="w-full text-left text-xs">
+        <div className="stack-wrap overflow-x-auto -mx-4 sm:-mx-5 md:-mx-6">
+          <table className="stack-table w-full text-left text-xs">
             <thead className="bg-slate-950/60 text-slate-500 text-xs border-y border-slate-800">
               <tr>
                 <th className="py-3 px-5">When</th>
@@ -112,13 +112,13 @@ export default function AuditLog() {
               {rows.map((r) => (
                 <tr key={r.id}>
                   <td className="py-3 px-5 text-slate-400 whitespace-nowrap">{new Date(r.at).toLocaleString()}</td>
-                  <td className="py-3 px-3">
+                  <td data-label="Who" className="py-3 px-3">
                     <span className="text-slate-200">{r.actor_email || 'system / SQL editor'}</span>
                     {r.actor_role && <span className="block text-slate-500">{r.actor_role}</span>}
                   </td>
-                  <td className={`py-3 px-3 font-semibold ${ACTION_STYLE[r.action] || 'text-slate-300'}`}>{r.action}</td>
-                  <td className="py-3 px-3 text-slate-400 font-mono">{r.table_name}</td>
-                  <td className="py-3 px-5 text-slate-300 max-w-md break-words">{summarize(r)}</td>
+                  <td data-label="Action" className={`py-3 px-3 font-semibold ${ACTION_STYLE[r.action] || 'text-slate-300'}`}>{r.action}</td>
+                  <td data-label="Area" className="py-3 px-3 text-slate-400 font-mono">{r.table_name}</td>
+                  <td data-label="Changed" className="py-3 px-5 text-slate-300 max-w-md break-words">{summarize(r)}</td>
                 </tr>
               ))}
             </tbody>

@@ -77,7 +77,8 @@ export default function LocationPicker({ lat, lng, onPick }) {
       </MapContainer>
 
       {!hasPin && (
-        <div className="absolute inset-x-0 bottom-0 z-[500] bg-slate-950/85 px-3 py-2 text-xs text-slate-300 text-center pointer-events-none">
+        // Top edge, clear of the zoom buttons (left) and the map credits (bottom).
+        <div className="absolute top-2.5 left-14 right-2.5 z-[500] rounded-lg border border-slate-700/60 bg-slate-950/85 px-3 py-1.5 text-[11px] sm:text-xs leading-snug text-slate-300 text-center pointer-events-none">
           Tap the map to drop a pin where you found the seagrass
         </div>
       )}

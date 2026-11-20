@@ -80,7 +80,7 @@ export default function AdminDashboard() {
           {countError && (
             <p className="text-xs text-rose-300 flex items-center gap-1.5"><AlertCircle className="w-3.5 h-3.5" /> {countError}</p>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <StatTile label="Pending sightings" value={counts?.pending} icon={ClipboardList} tone="amber" hint="Waiting for review" />
             <StatTile label="Approved sightings" value={counts?.approved} icon={MapPin} tone="cyan" hint="Shown on the public map" />
             <StatTile label="Species needing review" value={`${needsReview} / ${species.length}`} icon={Leaf} tone="emerald" hint="Profiles marked as draft" />

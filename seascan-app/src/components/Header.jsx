@@ -114,7 +114,7 @@ export default function Header() {
               type="button"
               onClick={handleAuthAction}
               title={user ? 'Click to log out' : 'Log in or register'}
-              className="bg-teal-500 hover:bg-teal-400 text-slate-950 px-4 py-2 rounded-md text-xs font-bold flex items-center gap-2"
+              className="bg-teal-500 hover:bg-teal-400 text-slate-950 px-3 sm:px-4 py-2 rounded-md text-xs font-bold whitespace-nowrap flex items-center gap-1.5 sm:gap-2"
             >
               {user ? (
                 <>
@@ -124,7 +124,7 @@ export default function Header() {
               ) : (
                 <>
                   <LogIn className="w-4 h-4" />
-                  <span>Portal Login</span>
+                  <span><span className="hidden min-[400px]:inline">Portal </span>Login</span>
                 </>
               )}
             </button>

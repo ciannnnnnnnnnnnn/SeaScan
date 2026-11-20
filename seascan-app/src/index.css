@@ -409,6 +409,111 @@ select option {
   color: var(--color-teal-300) !important;
 }
 
+/* --------------------------------------------------------------------------
+   Phones
+   -------------------------------------------------------------------------- */
+
+/* iPhones zoom the page in when a field with text smaller than 16px gets
+   focus, and do not zoom back out. Touch screens get 16px form text. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* Data tables: on narrow screens each row becomes a card and every cell
+   shows its column name (from data-label), so nothing needs side-scrolling.
+   Cells with data-label="" span the card without a label (e.g. actions). */
+@media (max-width: 639px) {
+  table.stack-table,
+  table.stack-table tbody,
+  table.stack-table tr,
+  table.stack-table td {
+    display: block;
+    width: 100%;
+  }
+
+  table.stack-table thead {
+    display: none;
+  }
+
+  table.stack-table tbody {
+    border: 0;
+  }
+
+  table.stack-table tr {
+    margin: 0 0 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-slate-800);
+    border-radius: 0.875rem;
+    background: color-mix(in oklab, var(--color-slate-950) 45%, transparent);
+  }
+
+  table.stack-table tr:last-child {
+    margin-bottom: 0;
+  }
+
+  table.stack-table td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.3rem 0 !important;
+    text-align: right;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+
+  table.stack-table td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-family: var(--font-sans);
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-slate-500);
+    text-align: left;
+  }
+
+  /* First cell = the row's title, shown large without a label. */
+  table.stack-table td:first-child {
+    display: block;
+    text-align: left;
+    font-size: 0.875rem;
+    padding-bottom: 0.4rem !important;
+  }
+
+  table.stack-table td:first-child p {
+    font-size: 0.75rem;
+  }
+
+  table.stack-table td:first-child::before,
+  table.stack-table td[data-label=""]::before {
+    content: none;
+  }
+
+  table.stack-table td[data-label=""] {
+    justify-content: flex-end;
+  }
+
+  table.stack-table td[data-label=""]:not(:first-child) {
+    margin-top: 0.4rem;
+    padding-top: 0.6rem !important;
+    border-top: 1px solid var(--color-slate-800);
+  }
+
+  /* The wrapper no longer needs the bleed used for full-width table rows. */
+  .stack-wrap {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: visible !important;
+  }
+}
+
 /* Slim scrollbars inside the portal work areas. */
 .thin-scroll {
   scrollbar-width: thin;

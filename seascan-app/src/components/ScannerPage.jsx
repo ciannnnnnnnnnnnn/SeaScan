@@ -261,7 +261,12 @@ export default function ScannerPage() {
                     <div className="w-16 h-16 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-300 mb-4 transition-transform duration-200 group-hover:-translate-y-1">
                       <Upload className="float-y w-7 h-7" />
                     </div>
-                    <p className="text-sm font-semibold text-slate-200">{isDragging ? 'Drop to identify' : 'Drag & drop a photo here'}</p>
+                    <p className="text-sm font-semibold text-slate-200">{isDragging ? 'Drop to identify' : (
+                      <>
+                        <span className="[@media(pointer:coarse)]:hidden">Drag &amp; drop a photo here</span>
+                        <span className="hidden [@media(pointer:coarse)]:inline">Choose a photo or take one</span>
+                      </>
+                    )}</p>
                     <p className="text-xs text-slate-500 mt-1 mb-5">One JPEG or PNG photo, up to {MAX_UPLOAD_MB} MB</p>
                     <span className="bg-teal-500 group-hover:bg-teal-400 text-slate-950 text-sm font-bold px-5 py-2.5 rounded-xl transition-colors inline-flex items-center gap-2">
                       <Upload className="w-4 h-4" />

@@ -93,7 +93,7 @@ export default function PortalShell({ base, title, subtitle, accent = 'teal', ta
   );
 
   return (
-    <div className="h-screen flex min-w-0 w-full overflow-hidden bg-slate-950 text-slate-100 font-sans antialiased">
+    <div className="h-dvh flex min-w-0 w-full overflow-hidden bg-slate-950 text-slate-100 font-sans antialiased">
       <aside className="hidden md:flex w-64 h-full bg-slate-900 border-r border-slate-800 flex-col shrink-0">
         {sidebar}
       </aside>
@@ -107,17 +107,17 @@ export default function PortalShell({ base, title, subtitle, accent = 'teal', ta
       )}
 
       <main className="thin-scroll flex-1 min-w-0 h-full overflow-y-auto">
-        <div className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 border-b border-slate-800 bg-slate-950/90">
+        <div className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2.5 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
           <button type="button" onClick={() => setMenuOpen(true)} aria-label="Open menu" className="p-2 rounded-lg bg-slate-800 text-slate-300">
             <Menu className="w-5 h-5" />
           </button>
-          <span className="text-sm font-semibold text-white">{title}</span>
+          <span className="min-w-0 truncate text-sm font-semibold text-white">{title}</span>
         </div>
 
         {tool || (
           <>
-            <div className="sticky top-0 md:top-0 z-20 border-b border-slate-800 bg-slate-950/80 px-4 md:px-8 py-5">
-              <h2 className="text-xl font-semibold text-white tracking-tight">{heading}</h2>
+            <div className="md:sticky md:top-0 z-20 border-b border-slate-800 bg-slate-950/80 px-4 md:px-8 py-4 md:py-5">
+              <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight">{heading}</h2>
               {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
             </div>
             <div className="p-4 md:p-8 space-y-6 max-w-7xl">{children}</div>
@@ -134,13 +134,13 @@ export function StatTile({ label, value, icon: Icon, tone = 'teal', hint }) {
     teal: 'text-teal-400', cyan: 'text-cyan-400', amber: 'text-amber-400', emerald: 'text-emerald-400', rose: 'text-rose-400',
   };
   return (
-    <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-400">{label}</span>
-        <Icon className={`w-4 h-4 ${tones[tone]}`} />
+    <div className="min-w-0 p-3.5 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 sm:space-y-3">
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-[11px] sm:text-xs font-semibold text-slate-400 leading-snug">{label}</span>
+        <Icon className={`w-4 h-4 shrink-0 ${tones[tone]}`} />
       </div>
-      <div className="text-3xl font-semibold text-white tabular-nums">{value ?? '—'}</div>
-      {hint && <p className="text-xs text-slate-500">{hint}</p>}
+      <div className="text-2xl sm:text-3xl font-semibold text-white tabular-nums">{value ?? '—'}</div>
+      {hint && <p className="text-[11px] sm:text-xs text-slate-500 leading-snug">{hint}</p>}
     </div>
   );
 }
@@ -149,7 +149,7 @@ export function StatTile({ label, value, icon: Icon, tone = 'teal', hint }) {
 export function Panel({ icon: Icon, title, description, actions, children }) {
   return (
     <section className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
-      <div className="p-5 md:p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 md:p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-base font-semibold text-white flex items-center gap-2">
             {Icon && <Icon className="w-5 h-5 text-teal-400" />}
@@ -159,7 +159,7 @@ export function Panel({ icon: Icon, title, description, actions, children }) {
         </div>
         {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
-      <div className="p-5 md:p-6">{children}</div>
+      <div className="p-4 sm:p-5 md:p-6">{children}</div>
     </section>
   );
 }

@@ -149,8 +149,8 @@ export default function SightingsReview({ onChanged }) {
       ) : rows.length === 0 ? (
         <p className="text-sm text-slate-500 py-6 text-center">No {status === 'all' ? '' : status} sightings.</p>
       ) : (
-        <div className="overflow-x-auto -mx-5 md:-mx-6">
-          <table className="w-full text-left text-xs">
+        <div className="stack-wrap overflow-x-auto -mx-4 sm:-mx-5 md:-mx-6">
+          <table className="stack-table w-full text-left text-xs">
             <thead className="bg-slate-950/60 text-slate-500 text-xs border-y border-slate-800">
               <tr>
                 <th className="py-3 px-5">Species</th>
@@ -170,39 +170,41 @@ export default function SightingsReview({ onChanged }) {
                     {r.notes && <p className="text-slate-500 mt-1 max-w-xs">{r.notes}</p>}
                     {r.review_note && <p className="text-rose-300/80 mt-1 max-w-xs">Review note: {r.review_note}</p>}
                   </td>
-                  <td className="py-3 px-3"><PhotoThumb path={r.photo_path} /></td>
-                  <td className="py-3 px-3 font-mono text-slate-400 whitespace-nowrap">
+                  <td data-label="Photo" className="py-3 px-3"><PhotoThumb path={r.photo_path} /></td>
+                  <td data-label="Location" className="py-3 px-3 font-mono text-slate-400 whitespace-nowrap">
+                    <span>
                     {Number(r.latitude).toFixed(5)}, {Number(r.longitude).toFixed(5)}
                     <span className={`block font-sans mt-0.5 ${r.location_source === 'demo' ? 'text-amber-300/80' : 'text-slate-600'}`}>
                       {r.location_source === 'gps' ? 'device GPS' : r.location_source === 'map' ? 'picked on map' : 'demo location'}
                     </span>
+                    </span>
                   </td>
-                  <td className="py-3 px-3 text-slate-400 whitespace-nowrap">{r.observed_on}</td>
-                  <td className="py-3 px-3 text-slate-400 tabular-nums">{r.model_confidence != null ? `${r.model_confidence}%` : '—'}</td>
-                  <td className="py-3 px-3">
+                  <td data-label="Observed" className="py-3 px-3 text-slate-400 whitespace-nowrap">{r.observed_on}</td>
+                  <td data-label="Model" className="py-3 px-3 text-slate-400 tabular-nums">{r.model_confidence != null ? `${r.model_confidence}%` : '—'}</td>
+                  <td data-label="Status" className="py-3 px-3">
                     <span className={`px-2 py-0.5 rounded-md border text-xs font-semibold capitalize ${STATUS[r.status]}`}>{r.status}</span>
                   </td>
-                  <td className="py-3 px-5">
-                    <div className="flex justify-end gap-1.5">
+                  <td data-label="" className="py-3 px-5">
+                    <div className="w-full flex flex-wrap sm:flex-nowrap justify-end gap-1.5">
                       <button onClick={() => setViewing(r)} title="View all details"
-                        className={`${buttonClass} bg-slate-800 text-slate-200 hover:bg-slate-700 flex items-center gap-1`}>
+                        className={`${buttonClass} flex-1 sm:flex-none justify-center whitespace-nowrap bg-slate-800 text-slate-200 hover:bg-slate-700 flex items-center gap-1`}>
                         <Eye className="w-3.5 h-3.5" /> View
                       </button>
                       {r.status !== 'approved' && (
                         <button disabled={busyId === r.id} onClick={() => approve(r)} title="Approve"
-                          className={`${buttonClass} bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 flex items-center gap-1`}>
+                          className={`${buttonClass} flex-1 sm:flex-none justify-center whitespace-nowrap bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 flex items-center gap-1`}>
                           <Check className="w-3.5 h-3.5" /> Approve
                         </button>
                       )}
                       {r.status !== 'rejected' && (
                         <button disabled={busyId === r.id} onClick={() => reject(r)} title="Reject"
-                          className={`${buttonClass} bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 flex items-center gap-1`}>
+                          className={`${buttonClass} flex-1 sm:flex-none justify-center whitespace-nowrap bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 flex items-center gap-1`}>
                           <Ban className="w-3.5 h-3.5" /> Reject
                         </button>
                       )}
                       {can('sightings.delete') && <button disabled={busyId === r.id} onClick={() => remove(r)} title="Delete" aria-label="Delete sighting"
-                        className={`${buttonClass} bg-rose-500/15 text-rose-300 hover:bg-rose-500/25`}>
-                        <Trash2 className="w-3.5 h-3.5" />
+                        className={`${buttonClass} w-full sm:w-auto justify-center bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 flex items-center gap-1`}>
+                        <Trash2 className="w-3.5 h-3.5" /><span className="sm:hidden">Delete</span>
                       </button>}
                     </div>
                   </td>

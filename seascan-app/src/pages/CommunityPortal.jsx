@@ -169,7 +169,7 @@ export default function CommunityPortal() {
   );
 
   return (
-    <div className="h-screen flex min-w-0 w-full overflow-hidden bg-slate-950 text-slate-100 font-sans antialiased">
+    <div className="h-dvh flex min-w-0 w-full overflow-hidden bg-slate-950 text-slate-100 font-sans antialiased">
       {/* SIDEBAR - emerald, distinct from the three staff portals. On phones it
           becomes a slide-in menu so the work area keeps the full width. */}
       <aside className="hidden md:flex w-64 h-full bg-slate-900 border-r border-slate-800 flex-col shrink-0">
@@ -190,7 +190,7 @@ export default function CommunityPortal() {
 
       {/* MAIN */}
       <main className="thin-scroll flex-1 min-w-0 h-full overflow-y-auto">
-        <div className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 border-b border-slate-800 bg-slate-950/90 backdrop-blur-md">
+        <div className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2.5 border-b border-slate-800 bg-slate-950/90 backdrop-blur-md">
           <button type="button" onClick={() => setMenuOpen(true)} aria-label="Open menu" className="p-2 rounded-lg bg-slate-800 text-slate-300">
             <Menu className="w-5 h-5" />
           </button>
@@ -199,8 +199,8 @@ export default function CommunityPortal() {
 
         {tool || (
           <>
-            <div className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-4 md:px-8 py-5">
-              <h2 className="text-xl font-bold text-white tracking-tight">
+            <div className="md:sticky md:top-0 z-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5">
+              <h2 className="text-lg md:text-xl font-bold text-white tracking-tight">
                 {navTabs.find((t) => t.id === activeTab)?.label}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -213,28 +213,28 @@ export default function CommunityPortal() {
               {/* OVERVIEW */}
               {activeTab === 'overview' && (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
                     <Reveal>
-                      <div className="hover-lift relative overflow-hidden h-full p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 space-y-3">
+                      <div className="hover-lift relative overflow-hidden h-full p-3.5 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 space-y-3">
                         <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-emerald-500/10 blur-2xl" />
                         <div className="relative flex items-center justify-between">
-                          <span className="text-xs font-semibold text-slate-400">Sightings Recorded</span>
-                          <ClipboardList className="w-4 h-4 text-emerald-400" />
+                          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 leading-snug">Sightings<span className="hidden sm:inline"> Recorded</span></span>
+                          <ClipboardList className="hidden sm:block w-4 h-4 text-emerald-400" />
                         </div>
-                        <div className="relative text-3xl font-bold text-white tabular-nums">
+                        <div className="relative text-2xl sm:text-3xl font-bold text-white tabular-nums">
                           {sightings.length}
                         </div>
                       </div>
                     </Reveal>
 
                     <Reveal delay={60}>
-                      <div className="hover-lift relative overflow-hidden h-full p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-teal-500/40 space-y-3">
+                      <div className="hover-lift relative overflow-hidden h-full p-3.5 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-teal-500/40 space-y-3">
                         <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-teal-500/10 blur-2xl" />
                         <div className="relative flex items-center justify-between">
-                          <span className="text-xs font-semibold text-slate-400">Species Contributed</span>
-                          <Leaf className="w-4 h-4 text-teal-400" />
+                          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 leading-snug">Species<span className="hidden sm:inline"> Contributed</span></span>
+                          <Leaf className="hidden sm:block w-4 h-4 text-teal-400" />
                         </div>
-                        <div className="relative text-3xl font-bold text-white tabular-nums">
+                        <div className="relative text-2xl sm:text-3xl font-bold text-white tabular-nums">
                           {distinctSpecies}
                           <span className="text-sm text-slate-500 font-semibold"> / 9</span>
                         </div>
@@ -242,13 +242,13 @@ export default function CommunityPortal() {
                     </Reveal>
 
                     <Reveal delay={120}>
-                      <div className="hover-lift relative overflow-hidden h-full p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 space-y-3">
+                      <div className="hover-lift relative overflow-hidden h-full p-3.5 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 space-y-3">
                         <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-cyan-500/10 blur-2xl" />
                         <div className="relative flex items-center justify-between">
-                          <span className="text-xs font-semibold text-slate-400">This Month</span>
-                          <MapPin className="w-4 h-4 text-cyan-400" />
+                          <span className="text-[11px] sm:text-xs font-semibold text-slate-400 leading-snug">This Month</span>
+                          <MapPin className="hidden sm:block w-4 h-4 text-cyan-400" />
                         </div>
-                        <div className="relative text-3xl font-bold text-white tabular-nums">{thisMonth}</div>
+                        <div className="relative text-2xl sm:text-3xl font-bold text-white tabular-nums">{thisMonth}</div>
                       </div>
                     </Reveal>
                   </div>
@@ -258,41 +258,41 @@ export default function CommunityPortal() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <button
                         onClick={() => setActiveTab('record')}
-                        className="hover-lift group text-left p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 space-y-3"
+                        className="hover-lift group text-left p-4 md:p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 flex items-start gap-4 md:block md:space-y-3"
                       >
-                        <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 flex items-center justify-center">
+                        <div className="shrink-0 w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 flex items-center justify-center">
                           <Camera className="w-5 h-5" />
                         </div>
-                        <h3 className="text-sm font-bold text-white">Record a Sighting</h3>
+                        <div className="min-w-0 space-y-1 md:space-y-3"><h3 className="text-sm font-bold text-white">Record a Sighting</h3>
                         <p className="text-xs text-slate-400 leading-relaxed">
                           Upload a photo and pin exactly where you found the seagrass.
-                        </p>
+                        </p></div>
                       </button>
 
                       <button
                         onClick={() => setActiveTab('ask')}
-                        className="hover-lift group text-left p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 space-y-3"
+                        className="hover-lift group text-left p-4 md:p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 flex items-start gap-4 md:block md:space-y-3"
                       >
-                        <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 flex items-center justify-center">
+                        <div className="shrink-0 w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 flex items-center justify-center">
                           <MessageSquare className="w-5 h-5" />
                         </div>
-                        <h3 className="text-sm font-bold text-white">Ask a Researcher</h3>
+                        <div className="min-w-0 space-y-1 md:space-y-3"><h3 className="text-sm font-bold text-white">Ask a Researcher</h3>
                         <p className="text-xs text-slate-400 leading-relaxed">
                           Unsure about an identification? Send it to the DORSU research team.
-                        </p>
+                        </p></div>
                       </button>
 
                       <Link
                         to="/community/map"
-                        className="hover-lift group p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-teal-500/40 space-y-3"
+                        className="hover-lift group p-4 md:p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-teal-500/40 flex items-start gap-4 md:block md:space-y-3"
                       >
-                        <div className="w-11 h-11 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-300 flex items-center justify-center">
+                        <div className="shrink-0 w-11 h-11 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-300 flex items-center justify-center">
                           <MapPin className="w-5 h-5" />
                         </div>
-                        <h3 className="text-sm font-bold text-white">See the Meadows</h3>
+                        <div className="min-w-0 space-y-1 md:space-y-3"><h3 className="text-sm font-bold text-white">See the Meadows</h3>
                         <p className="text-xs text-slate-400 leading-relaxed">
                           View recorded seagrass distribution across Pujada Bay.
-                        </p>
+                        </p></div>
                       </Link>
                     </div>
                   </Reveal>
@@ -359,8 +359,8 @@ export default function CommunityPortal() {
                         </p>
                       </div>
                     ) : (
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
+                      <div className="stack-wrap overflow-x-auto p-4 sm:p-0">
+                        <table className="stack-table w-full text-left text-xs">
                           <thead className="bg-slate-950/60 text-slate-500 uppercase text-[11px] tracking-wider border-b border-slate-800">
                             <tr>
                               <th className="py-3 px-6">Species</th>
@@ -373,11 +373,11 @@ export default function CommunityPortal() {
                             {sightings.map((rec) => (
                               <tr key={rec.id} className="hover:bg-slate-800/30 transition-colors">
                                 <td className="py-3 px-6 font-semibold italic text-slate-200">{speciesById(rec.species_id)?.scientific_name || '—'}</td>
-                                <td className="py-3 px-4 font-mono text-slate-400">
+                                <td data-label="Location" className="py-3 px-4 font-mono text-slate-400">
                                   {Number(rec.latitude).toFixed(4)}, {Number(rec.longitude).toFixed(4)}
                                 </td>
-                                <td className="py-3 px-4 text-slate-500">{rec.observed_on}</td>
-                                <td className="py-3 px-4">
+                                <td data-label="Observed" className="py-3 px-4 text-slate-500">{rec.observed_on}</td>
+                                <td data-label="Status" className="py-3 px-4">
                                   <span className={`px-2 py-0.5 rounded-full border text-[11px] font-semibold capitalize ${
                                     rec.status === 'approved' ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25'
                                       : rec.status === 'rejected' ? 'bg-rose-500/10 text-rose-300 border-rose-500/25'

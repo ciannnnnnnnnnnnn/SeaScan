@@ -170,7 +170,7 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
                 type="button"
                 onClick={() => chooseMode(m.id)}
                 aria-pressed={active}
-                className={`py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-colors ${
+                className={`min-h-11 px-1 py-2 rounded-xl text-xs font-semibold leading-tight text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 border transition-colors ${
                   active ? 'bg-teal-500/15 border-teal-500/40 text-teal-200' : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
                 }`}
               >
