@@ -1,28 +1,35 @@
 // src/pages/DistributionMapPage.jsx
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker, Rectangle, LayersControl, LayerGroup, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Rectangle, LayersControl, LayerGroup, Tooltip, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapPin, Crosshair, Layers, AlertTriangle, Loader2, Filter, ListOrdered, Plus, X } from 'lucide-react';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { useAuth } from '../context/AuthContext';
 import { useCatalog } from '../hooks/useCatalog';
 import { fetchMySightings, fetchPublicSightings } from '../lib/api';
 import SightingForm from '../components/SightingForm';
-import StationPopup from '../components/StationPopup';
+import StationPanel from '../components/StationPanel';
+import SightingCard from '../components/SightingCard';
 
-const coloredIcon = (color) => new L.Icon({
-  iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+// Clicking empty map closes the station panel. (Station clicks stop here first.)
+function MapBackgroundClick({ onClick }) {
+  useMapEvents({ click: onClick });
+  return null;
+}
 
-const communityIcon = coloredIcon('gold');
-const ownPendingIcon = coloredIcon('grey');
+// On wider screens the station panel docks on the side of the map away from
+// the selected station (left: beside the zoom buttons; right: below the layers
+// button). On phones it is a sheet along the bottom.
+const PANEL_WIDTH = 300;
+const PANEL_INSET = { left: 56, right: 64 }; // clear of the map's own buttons
+const isWide = () => window.matchMedia('(min-width: 640px)').matches;
+
+// Community sightings: circles like the stations, green; your own pending
+// sightings grey with a dashed edge.
+const SIGHTING_STYLE = { color: '#047857', fillColor: '#34d399', fillOpacity: 0.9, weight: 2 };
+const OWN_PENDING_STYLE = { color: '#475569', fillColor: '#94a3b8', fillOpacity: 0.85, weight: 2, dashArray: '3 3' };
+const SIGHTING_RADIUS = 7;
 
 // Geographic lock: the map can never be panned or zoomed outside Mati City,
 // Davao Oriental. [south, west] to [north, east].
@@ -42,6 +49,8 @@ export default function DistributionMapPage() {
   const [speciesFilter, setSpeciesFilter] = useState('all');
   const [map, setMap] = useState(null);
   const [showSightingDrawer, setShowSightingDrawer] = useState(false);
+  const [selectedStationId, setSelectedStationId] = useState(null);
+  const [panelSide, setPanelSide] = useState('left');
 
   useEffect(() => {
     fetchPublicSightings()
@@ -88,6 +97,52 @@ export default function DistributionMapPage() {
   const resetView = () => {
     if (map) map.flyToBounds(MATI_BOUNDS, { duration: 0.6 });
   };
+
+  const selectedStation = stationRows.find((st) => st.id === selectedStationId) || null;
+
+  // Dock the panel on the side away from the station, and move the map only if
+  // the station would still be hidden (narrow maps, or the phone sheet).
+  const placePanelFor = useCallback((st) => {
+    if (!map) return;
+    const p = map.latLngToContainerPoint([st.latitude, st.longitude]);
+    const { x: w, y: h } = map.getSize();
+    if (!isWide()) {
+      if (p.y > h * 0.35) map.panBy([0, p.y - h * 0.25]); // the sheet takes the lower part
+      return;
+    }
+    const side = p.x < w / 2 ? 'right' : 'left';
+    setPanelSide(side);
+    const [from, to] = side === 'left'
+      ? [PANEL_INSET.left, PANEL_INSET.left + PANEL_WIDTH]
+      : [w - PANEL_INSET.right - PANEL_WIDTH, w - PANEL_INSET.right];
+    const margin = 24;
+    if (p.x > from - margin && p.x < to + margin) {
+      // Centre the station in the free part of the map.
+      const freeMiddle = side === 'left' ? (to + w) / 2 : from / 2;
+      map.panBy([p.x - freeMiddle, 0]);
+    }
+  }, [map]);
+
+  const selectStation = (st) => {
+    setSelectedStationId(st.id);
+    placePanelFor(st);
+  };
+
+  // From the side list: fly to the station, then open its details.
+  const showStationFromList = (st) => {
+    if (!map) return;
+    setSelectedStationId(st.id);
+    map.once('moveend', () => placePanelFor(st));
+    map.flyTo([st.latitude, st.longitude], Math.max(map.getZoom(), 13), { duration: 0.6 });
+  };
+
+  // Esc closes the station panel.
+  useEffect(() => {
+    if (selectedStationId === null) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') setSelectedStationId(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedStationId]);
 
 
   return (
@@ -193,52 +248,73 @@ export default function DistributionMapPage() {
               <LayersControl position="topright">
                 <LayersControl.Overlay checked name="Verified survey stations">
                   <LayerGroup>
-                    {pinnedStations.map((st) => (
-                      <CircleMarker
-                        key={`station-${st.id}`}
-                        center={[st.latitude, st.longitude]}
-                        radius={richnessRadius(st.richness)}
-                        pathOptions={{ color: '#0e7490', fillColor: '#22d3ee', fillOpacity: 0.75, weight: 2 }}
-                      >
-                        <Tooltip>{st.name} · {st.richness} species</Tooltip>
-                        <Popup className="station-popup" maxWidth={300} minWidth={260} maxHeight={500} autoPanPadding={[16, 16]}>
-                          <StationPopup station={st} speciesById={speciesById} />
-                        </Popup>
-                      </CircleMarker>
-                    ))}
+                    {pinnedStations.map((st) => {
+                      const selected = st.id === selectedStationId;
+                      return (
+                        <CircleMarker
+                          key={`station-${st.id}`}
+                          center={[st.latitude, st.longitude]}
+                          radius={richnessRadius(st.richness) + (selected ? 3 : 0)}
+                          pathOptions={selected
+                            ? { color: '#ffffff', fillColor: '#2dd4bf', fillOpacity: 0.95, weight: 3 }
+                            : { color: '#0e7490', fillColor: '#22d3ee', fillOpacity: 0.75, weight: 2 }}
+                          eventHandlers={{
+                            click: (e) => { L.DomEvent.stopPropagation(e); selectStation(st); },
+                          }}
+                        >
+                          <Tooltip>{st.name} · {st.richness} species</Tooltip>
+                        </CircleMarker>
+                      );
+                    })}
                   </LayerGroup>
                 </LayersControl.Overlay>
 
                 <LayersControl.Overlay checked name="Community sightings (unverified)">
                   <LayerGroup>
+                    {/* Hover (or tap) shows the card; "auto" opens it to the side with more room. */}
                     {visibleSightings.map((s) => (
-                      <Marker key={`sighting-${s.id}`} position={[s.latitude, s.longitude]} icon={communityIcon}>
-                        <Popup>
-                          <div>
-                            <h4 style={{ margin: '0 0 4px 0' }}><em>{s.scientific_name}</em></h4>
-                            <p style={{ margin: '2px 0', fontSize: 12, color: '#b45309' }}><strong>Community-submitted, unverified</strong></p>
-                            <p style={{ margin: '2px 0', fontSize: 12 }}>Reviewed by a researcher; not a verified survey station.</p>
-                            <p style={{ margin: '2px 0', fontSize: 12 }}><strong>Observed:</strong> {s.observed_on}</p>
-                            {s.location_source === 'demo' && <p style={{ margin: '2px 0', fontSize: 12 }}>Demo location (user testing)</p>}
-                          </div>
-                        </Popup>
-                      </Marker>
+                      <CircleMarker key={`sighting-${s.id}`} center={[s.latitude, s.longitude]} radius={SIGHTING_RADIUS} pathOptions={SIGHTING_STYLE}>
+                        <Tooltip className="sighting-tooltip" direction="auto" opacity={1}>
+                          <SightingCard
+                            speciesName={s.scientific_name}
+                            submitter={s.submitter_name}
+                            photoPath={s.photo_path}
+                            observedOn={s.observed_on}
+                            demo={s.location_source === 'demo'}
+                          />
+                        </Tooltip>
+                      </CircleMarker>
                     ))}
                     {visibleMine.map((s) => (
-                      <Marker key={`mine-${s.id}`} position={[s.latitude, s.longitude]} icon={ownPendingIcon}>
-                        <Popup>
-                          <div>
-                            <h4 style={{ margin: '0 0 4px 0' }}><em>{speciesById(s.species_id)?.scientific_name}</em></h4>
-                            <p style={{ margin: '2px 0', fontSize: 12 }}><strong>Your sighting - pending review</strong></p>
-                            <p style={{ margin: '2px 0', fontSize: 12 }}>Only you can see this until a researcher approves it.</p>
-                          </div>
-                        </Popup>
-                      </Marker>
+                      <CircleMarker key={`mine-${s.id}`} center={[s.latitude, s.longitude]} radius={SIGHTING_RADIUS} pathOptions={OWN_PENDING_STYLE}>
+                        <Tooltip className="sighting-tooltip" direction="auto" opacity={1}>
+                          <SightingCard
+                            speciesName={speciesById(s.species_id)?.scientific_name || '—'}
+                            submitter={user?.displayName ? `${user.displayName} (you)` : 'You'}
+                            photoPath={s.photo_path}
+                            observedOn={s.observed_on}
+                            status="pending"
+                            demo={s.location_source === 'demo'}
+                          />
+                        </Tooltip>
+                      </CircleMarker>
                     ))}
                   </LayerGroup>
                 </LayersControl.Overlay>
               </LayersControl>
+              <MapBackgroundClick onClick={() => setSelectedStationId(null)} />
             </MapContainer>
+
+            {/* Station details: docked beside the zoom buttons on wider screens,
+                a sheet along the bottom on phones. Scrolls inside if it is long. */}
+            {selectedStation && (
+              <div
+                key={selectedStation.id}
+                className={`absolute z-[1000] inset-x-2 bottom-2 max-h-[62%] sm:inset-x-auto sm:bottom-auto sm:top-3 ${panelSide === 'left' ? 'sm:left-14' : 'sm:right-16'} sm:w-[300px] sm:max-h-[calc(100%-1.5rem)] overflow-y-auto thin-scroll rounded-2xl border border-slate-700 bg-slate-900/95 backdrop-blur-sm p-4 shadow-2xl shadow-slate-950/60 modal-in`}
+              >
+                <StationPanel station={selectedStation} speciesById={speciesById} onClose={() => setSelectedStationId(null)} />
+              </div>
+            )}
           </div>
 
           {/* LEGEND */}
@@ -250,11 +326,11 @@ export default function DistributionMapPage() {
               <span className="w-3 h-3 rounded-full bg-cyan-400 border-2 border-cyan-700" /> Verified survey station (larger = more species)
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Community-submitted, unverified
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-emerald-700" /> Community-submitted, unverified (hover for details)
             </span>
             {user && (
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-400" /> Your sighting, pending review
+                <span className="w-2.5 h-2.5 rounded-full bg-slate-400 border-2 border-dashed border-slate-600" /> Your sighting, pending review
               </span>
             )}
             <span className="flex items-center gap-1.5">
@@ -279,7 +355,7 @@ export default function DistributionMapPage() {
                     <button
                       type="button"
                       disabled={st.latitude === null}
-                      onClick={() => map?.flyTo([st.latitude, st.longitude], 14, { duration: 0.6 })}
+                      onClick={() => showStationFromList(st)}
                       className="font-semibold text-slate-200 hover:text-teal-300 disabled:hover:text-slate-200 disabled:cursor-default text-left"
                     >
                       {st.name}

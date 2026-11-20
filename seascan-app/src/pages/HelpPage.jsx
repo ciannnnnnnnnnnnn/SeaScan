@@ -145,7 +145,7 @@ export default function HelpPage() {
             <li>SeaScan uses only essential cookies to keep you signed in. Without "Keep me signed in", they are removed when you close the browser; with it, after 30 days. No tracking or advertising cookies are used. You are signed out after 30 minutes of inactivity unless you chose to stay signed in (staff accounts are always signed out).</li>
             <li>An account needs only an email and password. A nickname is optional; no real name is collected.</li>
             <li>Sighting photos are stored privately, visible only to you and the research team, with hidden metadata removed.</li>
-            <li>The public map never shows who submitted a sighting.</li>
+            <li>The public map does not show who submitted a sighting or its photo, unless the submitter ticked "Show my nickname and photo" for that sighting. Only the nickname is shown, never the email.</li>
             <li>Feedback is anonymous. Data from user-testing sessions is deleted after the sessions.</li>
           </ul>
         </section>

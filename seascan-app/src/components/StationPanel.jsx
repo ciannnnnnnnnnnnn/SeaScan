@@ -1,22 +1,14 @@
-// src/components/StationPopup.jsx
-// Content of a survey station's popup on the Distribution Map: name, where it
-// is, the species recorded there (each opening its library profile), and a
-// switch that shows or hides the study the record comes from.
-import React, { useEffect, useState } from 'react';
+// src/components/StationPanel.jsx
+// Details of the selected survey station on the Distribution Map: name, where
+// it is, the species recorded there (each opening its library profile), and a
+// switch that shows or hides the study the record comes from. Shown as a panel
+// docked inside the map (not a Leaflet popup), so it is always fully visible.
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useMap } from 'react-leaflet';
-import { MapPin, ChevronDown, ChevronRight, BookMarked, Leaf } from 'lucide-react';
+import { MapPin, ChevronDown, ChevronRight, BookMarked, Leaf, X } from 'lucide-react';
 
-export default function StationPopup({ station, speciesById }) {
-  const map = useMap();
+export default function StationPanel({ station, speciesById, onClose }) {
   const [showStudy, setShowStudy] = useState(false);
-
-  // Leaflet only fits a popup into view when it opens; when the study panel
-  // or the species list changes its height, re-fit it so nothing is cut off.
-  const refit = () => requestAnimationFrame(() => {
-    map.eachLayer((layer) => { if (layer.isPopupOpen?.()) layer.getPopup().update(); });
-  });
-  useEffect(() => { refit(); }, [showStudy]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // One entry per species, with every study that recorded it at this station.
   const records = station.speciesIds
@@ -28,9 +20,15 @@ export default function StationPopup({ station, speciesById }) {
     .sort((a, b) => a.species.scientific_name.localeCompare(b.species.scientific_name));
 
   return (
-    <div className="w-[260px] text-slate-300 font-sans">
+    <section aria-label={`Survey station ${station.name}`} className="text-slate-300 font-sans">
       {/* Name and location */}
-      <h3 className="text-base font-bold text-white leading-snug">{station.name}</h3>
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-base font-bold text-white leading-snug">{station.name}</h3>
+        <button type="button" onClick={onClose} aria-label="Close station details"
+          className="-mt-1 -mr-1 p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 shrink-0">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
       <p className="mt-1 flex items-start gap-1.5 text-xs leading-relaxed">
         <MapPin className="w-3.5 h-3.5 mt-px shrink-0 text-cyan-400" />
         {station.location
@@ -41,8 +39,8 @@ export default function StationPopup({ station, speciesById }) {
         Verified survey station · <span className="text-cyan-300 font-semibold tabular-nums">{records.length}</span> species
       </p>
 
-      {/* Species, collapsible */}
-      <details open onToggle={refit} className="group mt-3 rounded-xl border border-slate-700/80 bg-slate-950/50">
+      {/* Species, collapsed until the visitor opens it */}
+      <details className="group mt-3 rounded-xl border border-slate-700/80 bg-slate-950/50">
         <summary className="list-none cursor-pointer select-none flex items-center justify-between gap-2 px-3 py-2 text-xs font-semibold text-slate-200">
           <span className="flex items-center gap-1.5">
             <Leaf className="w-3.5 h-3.5 text-teal-400" /> Species recorded ({records.length})
@@ -50,8 +48,7 @@ export default function StationPopup({ station, speciesById }) {
           <ChevronDown className="w-4 h-4 text-slate-500 transition-transform group-open:rotate-180" />
         </summary>
         {records.length ? (
-          // Shorter list while the study is shown, so both fit in the popup.
-          <ul className={`px-1.5 pb-1.5 space-y-0.5 overflow-y-auto thin-scroll ${showStudy ? 'max-h-32' : 'max-h-56'}`}>
+          <ul className="px-1.5 pb-1.5 space-y-0.5">
             {records.map(({ species, sources }) => (
               <li key={species.id}>
                 <Link
@@ -105,6 +102,6 @@ export default function StationPopup({ station, speciesById }) {
           {station.notes && <p className="text-slate-400">{station.notes}</p>}
         </div>
       )}
-    </div>
+    </section>
   );
 }

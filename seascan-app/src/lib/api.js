@@ -197,9 +197,11 @@ export async function fetchAllSightings(status) {
 
 /**
  * Save a sighting. The photo (optional) is re-encoded without metadata and
- * stored privately under the user's own folder.
+ * stored privately under the user's own folder. With sharePublicly, the
+ * submitter's nickname and the photo are shown on the public map once the
+ * sighting is approved.
  */
-export async function submitSighting({ userId, speciesId, latitude, longitude, locationSource, observedOn, notes, photoFile, modelConfidence }) {
+export async function submitSighting({ userId, speciesId, latitude, longitude, locationSource, observedOn, notes, photoFile, modelConfidence, sharePublicly = false }) {
   let photoPath = null;
   if (photoFile) {
     const blob = await stripMetadata(photoFile);
@@ -216,6 +218,8 @@ export async function submitSighting({ userId, speciesId, latitude, longitude, l
       notes: notes?.trim() || null,
       photo_path: photoPath,
       model_confidence: modelConfidence ?? null,
+      // Sent only when chosen, so saving still works before its migration is run.
+      ...(sharePublicly ? { share_publicly: true } : {}),
     }));
   } catch (err) {
     // Don't leave an orphaned photo behind if the record itself was refused.

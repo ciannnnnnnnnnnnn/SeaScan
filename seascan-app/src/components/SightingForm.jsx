@@ -34,6 +34,7 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
   const [observedOn, setObservedOn] = useState(today());
   const [notes, setNotes] = useState('');
   const [includeScanPhoto, setIncludeScanPhoto] = useState(true);
+  const [sharePublicly, setSharePublicly] = useState(false);
   const [pickedPhoto, setPickedPhoto] = useState(null);
   const [locating, setLocating] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -45,6 +46,7 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
   }, [species, speciesId, initialSpeciesId]);
 
   const pickedPreview = useMemo(() => (pickedPhoto ? URL.createObjectURL(pickedPhoto) : null), [pickedPhoto]);
+  const willHavePhoto = (photoFile && includeScanPhoto) || !!pickedPhoto;
   useEffect(() => () => pickedPreview && URL.revokeObjectURL(pickedPreview), [pickedPreview]);
 
   const btn = accent === 'emerald'
@@ -120,9 +122,11 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
         notes,
         photoFile: photoFile && includeScanPhoto ? photoFile : pickedPhoto,
         modelConfidence,
+        sharePublicly,
       });
       setNotice('Sighting submitted. It will appear on the public map once a researcher approves it.');
       setNotes('');
+      setSharePublicly(false); // ask again for the next sighting
       setPickedPhoto(null);
       onSaved?.();
     } catch (err) {
@@ -224,9 +228,24 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
           placeholder="Water depth, substrate, tide..." className={`${field} resize-none`} />
       </div>
 
+      {/* Opt-in: off unless the submitter chooses to share. */}
+      <label className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-300 cursor-pointer">
+        <input type="checkbox" className="mt-0.5" checked={sharePublicly} onChange={(e) => setSharePublicly(e.target.checked)} />
+        <span>
+          Show my nickname{willHavePhoto ? ' and photo' : ''} with this sighting on the public map
+          <span className="block text-slate-500 mt-0.5">
+            {user?.displayName
+              ? <>Shown as <span className="text-slate-300 font-semibold">{user.displayName}</span>. </>
+              : <>You have no nickname, so it shows as &quot;Community member&quot;. Set one in My Account. </>}
+            Only after a researcher approves it. Your email is never shown.
+          </span>
+        </span>
+      </label>
+
       <p className="text-xs text-slate-500 leading-relaxed">
         Photos are stored privately and their hidden metadata (including any GPS tag) is removed before upload.
-        Only you and the research team can see them. New sightings show as unverified until a researcher reviews them.
+        Only you and the research team can see them, unless you choose to show them on the public map above.
+        New sightings show as unverified until a researcher reviews them.
       </p>
 
       <button type="submit" disabled={saving || !species.length}
