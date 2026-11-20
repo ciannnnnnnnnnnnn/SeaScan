@@ -25,7 +25,7 @@ const MANUAL = [
     steps: [
       'Create an account or log in (Portal Login). No real name is needed.',
       'After a scan, choose "Record This Sighting", or use "Submit a sighting" on the Distribution Map.',
-      'Pick the location: your GPS, tap the map, or "Demo location" during user testing.',
+      'Pick the location: use your GPS or tap the map.',
       'Check the species and date, add notes or the photo if you like, then submit.',
       'A researcher reviews it. Once approved it appears on the map as a community-submitted, unverified record.',
       'My Account (top menu) lists your sightings and their review status, your scan history and your profile settings.',
@@ -59,7 +59,6 @@ const FAQ = [
   ['Why does it say "not sure"?', 'The best match was below 70% confidence. Blurry, dark or distant photos, or species not in the nine covered, lead to low confidence. Retake the photo or consult a marine science expert.'],
   ['Which species can SeaScan identify?', 'The nine seagrass species recorded in Pujada Bay, Mati City. See the Digital Library for the full list.'],
   ['Why is my sighting not on the map?', 'New sightings are pending until a researcher approves them. You can see your own pending sightings on the map as grey pins and in your sighting list.'],
-  ['What is the demo location?', 'A fixed point in Pujada Bay used during user testing, so participants never share their real location.'],
   ['How do I become a researcher or admin?', 'Those roles are assigned by a SeaScan administrator. Contact the team using the email below.'],
   ['Does the camera work on my phone?', 'Yes, on current Chrome, Safari, Firefox and Edge over HTTPS. Allow camera access when asked. If it does not start, use "Select a photo" - most phones then offer to take a picture.'],
 ];

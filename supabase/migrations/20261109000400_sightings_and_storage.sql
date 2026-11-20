@@ -14,7 +14,7 @@ create table if not exists public.sightings (
   species_id        bigint not null references public.species (id) on delete restrict,
   latitude          double precision not null check (latitude between 6.72 and 7.08),     -- Mati City bounds
   longitude         double precision not null check (longitude between 126.08 and 126.40),
-  location_source   text not null check (location_source in ('gps', 'map', 'demo')),
+  location_source   text not null check (location_source in ('gps', 'map')),
   observed_on       date not null default current_date,
   notes             text check (notes is null or char_length(notes) <= 500),
   photo_path        text,                                    -- object path in 'sighting-photos'

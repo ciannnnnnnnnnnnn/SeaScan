@@ -10,13 +10,13 @@
 --   Policies still check the profiles table, so a role change or revocation
 --   applies immediately, without waiting for the token to refresh.
 -- AUDIT: every change made by staff (species, stations, roles, sighting
---   reviews, deletions, test-data clean-up) is written to audit_log by
+--   reviews, deletions) is written to audit_log by
 --   database triggers. The log is append-only and readable by admins only.
 -- =============================================================================
 
 -- ---------------------------------------------------------------- RBAC
 create table if not exists public.role_permissions (
-  role        text not null check (role in ('community', 'researcher', 'admin', 'developer')),
+  role        text not null check (role in ('community', 'researcher', 'admin')),
   permission  text not null,
   primary key (role, permission)
 );
@@ -27,8 +27,6 @@ comment on table public.role_permissions is
 insert into public.role_permissions (role, permission) values
   ('community',  'sightings.submit'),
   ('community',  'questions.ask'),
-  ('developer',  'sightings.submit'),
-  ('developer',  'questions.ask'),
   ('researcher', 'sightings.submit'),
   ('researcher', 'questions.ask'),
   ('researcher', 'sightings.review'),
@@ -48,7 +46,6 @@ insert into public.role_permissions (role, permission) values
   ('admin',      'species.manage'),
   ('admin',      'stations.manage'),
   ('admin',      'users.manage'),
-  ('admin',      'testdata.delete'),
   ('admin',      'audit.read')
 on conflict do nothing;
 
@@ -111,10 +108,10 @@ create or replace function public.guard_profile_privileges()
 returns trigger language plpgsql security definer set search_path = ''
 as $$
 begin
-  if (new.role is distinct from old.role or new.is_test_account is distinct from old.is_test_account)
+  if new.role is distinct from old.role
      and auth.uid() is not null
      and not public.has_permission('users.manage') then
-    raise exception 'Only an administrator can change roles or the test-account flag.' using errcode = '42501';
+    raise exception 'Only an administrator can change roles.' using errcode = '42501';
   end if;
   if new.id is distinct from old.id or new.created_at is distinct from old.created_at then
     raise exception 'Profile id and created_at cannot be changed.' using errcode = '42501';
@@ -293,7 +290,7 @@ create trigger audit_station_species after insert or delete on public.station_sp
 drop trigger if exists audit_profiles on public.profiles;
 create trigger audit_profiles after update on public.profiles
   for each row
-  when (old.role is distinct from new.role or old.is_test_account is distinct from new.is_test_account)
+  when (old.role is distinct from new.role)
   execute function public.audit_row_change();
 
 drop trigger if exists audit_sightings on public.sightings;
@@ -308,9 +305,9 @@ drop trigger if exists audit_questions on public.community_questions;
 create trigger audit_questions after update or delete on public.community_questions
   for each row execute function public.audit_row_change();
 
--- Admin functions: permission-based, and the clean-up logs one summary row.
+-- Admin functions: permission-based.
 create or replace function public.admin_list_users()
-returns table (id uuid, email text, display_name text, user_type text, role text, is_test_account boolean,
+returns table (id uuid, email text, display_name text, user_type text, role text,
                created_at timestamptz, last_sign_in_at timestamptz, sighting_count bigint)
 language plpgsql stable security definer set search_path = ''
 as $$
@@ -319,65 +316,11 @@ begin
     raise exception 'Administrators only.' using errcode = '42501';
   end if;
   return query
-    select p.id, u.email::text, p.display_name, p.user_type, p.role, p.is_test_account,
+    select p.id, u.email::text, p.display_name, p.user_type, p.role,
            p.created_at, u.last_sign_in_at,
            (select count(*) from public.sightings s where s.user_id = p.id)
     from public.profiles p join auth.users u on u.id = p.id
     order by p.created_at desc;
-end;
-$$;
-
-create or replace function public.delete_test_session_data(p_from timestamptz, p_to timestamptz)
-returns table (photo_path text, deleted_sightings int, deleted_questions int, deleted_feedback int)
-language plpgsql security definer set search_path = ''
-as $$
-declare
-  v_paths text[];
-  v_s int;
-  v_q int;
-  v_f int;
-begin
-  if not public.has_permission('testdata.delete') then
-    raise exception 'Administrators only.' using errcode = '42501';
-  end if;
-  if p_from is null or p_to is null or p_to <= p_from then
-    raise exception 'Give a valid time window (from < to).';
-  end if;
-
-  perform set_config('seascan.bulk_audit', 'on', true);
-
-  with gone as (
-    delete from public.sightings s using public.profiles p
-    where p.id = s.user_id and p.is_test_account and s.created_at >= p_from and s.created_at < p_to
-    returning s.photo_path
-  )
-  select array_agg(gone.photo_path) filter (where gone.photo_path is not null), count(*) into v_paths, v_s from gone;
-
-  with gone as (
-    delete from public.community_questions q using public.profiles p
-    where p.id = q.user_id and p.is_test_account and q.created_at >= p_from and q.created_at < p_to
-    returning 1
-  )
-  select count(*) into v_q from gone;
-
-  with gone as (
-    delete from public.feedback f
-    where f.created_at >= p_from and f.created_at < p_to
-      and (f.user_id is null or exists (select 1 from public.profiles p where p.id = f.user_id and p.is_test_account))
-    returning 1
-  )
-  select count(*) into v_f from gone;
-
-  perform set_config('seascan.bulk_audit', 'off', true);
-  perform public.write_audit('bulk_delete', 'test_session_data', null, null,
-    jsonb_build_object('from', p_from, 'to', p_to, 'sightings', v_s, 'questions', v_q, 'feedback', v_f),
-    'Evaluation-session data deleted');
-
-  if v_paths is null or cardinality(v_paths) = 0 then
-    return query select null::text, v_s, v_q, v_f;
-  else
-    return query select unnest(v_paths), v_s, v_q, v_f;
-  end if;
 end;
 $$;
 

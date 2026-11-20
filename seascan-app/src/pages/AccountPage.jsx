@@ -31,7 +31,7 @@ const STATUS_CHIP = {
   rejected: 'bg-rose-500/10 text-rose-300 border-rose-500/25',
 };
 
-const PORTAL_NAME = { admin: 'Admin Panel', researcher: 'Researcher Panel', community: 'Community Hub', developer: 'Dev Console' };
+const PORTAL_NAME = { admin: 'Admin Panel', researcher: 'Researcher Panel', community: 'Community Hub' };
 
 const field = 'w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-teal-500 transition-colors';
 const label = 'block text-xs text-slate-400 font-semibold mb-1.5';
@@ -198,7 +198,6 @@ function MySightings({ user }) {
                   <td data-label="Species" className="py-3 pr-4 italic text-slate-200">{speciesById(s.species_id)?.scientific_name || '—'}</td>
                   <td data-label="Location" className="py-3 pr-4 font-mono text-slate-400">
                     {Number(s.latitude).toFixed(4)}, {Number(s.longitude).toFixed(4)}
-                    {s.location_source === 'demo' && <span className="ml-1.5 font-sans text-amber-300/80">(demo)</span>}
                   </td>
                   <td data-label="Observed" className="py-3 pr-4 text-slate-500">{s.observed_on}</td>
                   <td data-label="Status" className="py-3 pr-4">

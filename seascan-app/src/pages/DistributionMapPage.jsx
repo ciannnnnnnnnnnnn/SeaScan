@@ -280,7 +280,6 @@ export default function DistributionMapPage() {
                             submitter={s.submitter_name}
                             photoPath={s.photo_path}
                             observedOn={s.observed_on}
-                            demo={s.location_source === 'demo'}
                           />
                         </Tooltip>
                       </CircleMarker>
@@ -294,7 +293,6 @@ export default function DistributionMapPage() {
                             photoPath={s.photo_path}
                             observedOn={s.observed_on}
                             status="pending"
-                            demo={s.location_source === 'demo'}
                           />
                         </Tooltip>
                       </CircleMarker>

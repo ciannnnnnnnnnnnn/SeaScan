@@ -14,21 +14,19 @@ import DistributionMap from './pages/DistributionMapPage';
 import SpeciesProfilePage from './pages/SpeciesProfilePage';
 import HelpPage from './pages/HelpPage';
 import AboutModelPage from './pages/AboutModelPage';
-import DeveloperPortal from './pages/DeveloperPortal';
 import CommunityPortal from './pages/CommunityPortal';
 import AdminDashboard from './components/AdminDashboard';
 import ResearcherPanel from './components/ResearcherPanel';
 import ScannerPage from './components/ScannerPage';
 import AccountPage from './pages/AccountPage';
 
-const ALL_ROLES = ['community', 'researcher', 'admin', 'developer'];
+const ALL_ROLES = ['community', 'researcher', 'admin'];
 
 // Each portal is a self-contained shell with its own sidebar navigation, and
 // the roles that may open it. The Community Hub is open to every signed-in user.
 const PORTAL_ROLES = {
   '/admin': ['admin'],
   '/researcher': ['researcher'],
-  '/developers': ['developer'],
   '/community': ALL_ROLES,
 };
 
@@ -79,14 +77,6 @@ function AppShell() {
             element={
               <ProtectedRoute allowedRoles={ALL_ROLES}>
                 <AccountPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/developers/*"
-            element={
-              <ProtectedRoute allowedRoles={['developer']}>
-                <DeveloperPortal />
               </ProtectedRoute>
             }
           />

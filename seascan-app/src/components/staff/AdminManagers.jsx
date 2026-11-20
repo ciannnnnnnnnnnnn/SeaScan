@@ -1,10 +1,10 @@
 // src/components/staff/AdminManagers.jsx
 // Admin-only tools: survey stations, users and roles, test-session clean-up.
 import React, { useCallback, useEffect, useState } from 'react';
-import { MapPin, Plus, Save, Trash2, Users, Eraser, X } from 'lucide-react';
+import { MapPin, Plus, Save, Trash2, Users, X } from 'lucide-react';
 import {
   saveStation, deleteStation, addStationSpecies, removeStationSpecies,
-  adminListUsers, adminUpdateUser, deleteTestSessionData,
+  adminListUsers, adminUpdateUser,
 } from '../../lib/api';
 import { useCatalog, refreshCatalog } from '../../hooks/useCatalog';
 import { useAuth } from '../../context/AuthContext';
@@ -163,7 +163,7 @@ export function StationsManager() {
 
 // --------------------------------------------------------------------- users
 
-const ROLES = ['community', 'researcher', 'admin', 'developer'];
+const ROLES = ['community', 'researcher', 'admin'];
 
 export function UsersManager({ onCount }) {
   const { user: me } = useAuth();
@@ -191,7 +191,7 @@ export function UsersManager({ onCount }) {
 
   return (
     <Panel icon={Users} title="Users and roles"
-      description="Change a role or mark test accounts. To delete an account, use Supabase Dashboard > Authentication > Users (see DEPLOYMENT.md)."
+      description="Change an account's role. To delete an account, use Supabase Dashboard > Authentication > Users (see DEPLOYMENT.md)."
       actions={<input className={`${inputClass} w-full sm:w-56`} placeholder="Search…" value={query} onChange={(e) => setQuery(e.target.value)} />}>
       <Alert>{error}</Alert>
       <div className="stack-wrap overflow-x-auto -mx-4 sm:-mx-5 md:-mx-6">
@@ -201,7 +201,6 @@ export function UsersManager({ onCount }) {
               <th className="py-3 px-5">Account</th>
               <th className="py-3 px-3">Type</th>
               <th className="py-3 px-3">Role</th>
-              <th className="py-3 px-3">Test account</th>
               <th className="py-3 px-3">Sightings</th>
               <th className="py-3 px-5">Last sign-in</th>
             </tr>
@@ -220,78 +219,12 @@ export function UsersManager({ onCount }) {
                     {ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
                   </select>
                 </td>
-                <td data-label="Test account" className="py-3 px-3">
-                  <input type="checkbox" aria-label="Test account" checked={r.is_test_account} onChange={(e) => update(r, { is_test_account: e.target.checked })} />
-                </td>
                 <td data-label="Sightings" className="py-3 px-3 text-slate-400 tabular-nums">{r.sighting_count}</td>
                 <td data-label="Last sign-in" className="py-3 px-5 text-slate-500">{r.last_sign_in_at ? new Date(r.last_sign_in_at).toLocaleDateString() : 'never'}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
-    </Panel>
-  );
-}
-
-// ---------------------------------------------------------- test-data clean-up
-
-const localInput = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-
-export function TestDataCleanup() {
-  const now = new Date();
-  const [from, setFrom] = useState(localInput(new Date(now.getTime() - 24 * 3600 * 1000)));
-  const [to, setTo] = useState(localInput(now));
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [busy, setBusy] = useState(false);
-
-  const run = async () => {
-    setError(null);
-    setResult(null);
-    const f = new Date(from);
-    const t = new Date(to);
-    if (!(t > f)) { setError('"To" must be after "From".'); return; }
-    if (!window.confirm('Permanently delete all sightings, questions and photos from TEST accounts, and all anonymous feedback and logged identification results, in this time window?')) return;
-    setBusy(true);
-    try {
-      setResult(await deleteTestSessionData(f.toISOString(), t.toISOString()));
-    } catch (err) { setError(err.message); } finally { setBusy(false); }
-  };
-
-  return (
-    <Panel icon={Eraser} title="Delete evaluation-session data"
-      description="After user testing: removes what accounts marked as 'test account' created in the chosen window, their photos, and the anonymous feedback and identification results logged in the same window. Real accounts are not touched.">
-      <div className="grid sm:grid-cols-3 gap-3 items-end">
-        <div>
-          <label className={labelClass}>From</label>
-          <input type="datetime-local" className={inputClass} value={from} onChange={(e) => setFrom(e.target.value)} />
-        </div>
-        <div>
-          <label className={labelClass}>To</label>
-          <input type="datetime-local" className={inputClass} value={to} onChange={(e) => setTo(e.target.value)} />
-        </div>
-        <button onClick={run} disabled={busy} className={`${buttonClass} py-2.5 bg-rose-500 hover:bg-rose-400 text-slate-950 flex items-center justify-center gap-1.5`}>
-          <Trash2 className="w-3.5 h-3.5" /> Delete test data
-        </button>
-      </div>
-      <div className="mt-4 space-y-2">
-        <Alert>{error}</Alert>
-        {result && (
-          <Alert kind="success">
-            Deleted {result.sightings} sighting(s), {result.photos} photo(s), {result.questions} question(s), {result.feedback} feedback message(s),
-            {' '}{result.scans} scan history entr{result.scans === 1 ? 'y' : 'ies'}
-            {result.identifications !== null && <> and {result.identifications} logged identification result(s)</>}.
-          </Alert>
-        )}
-        {result?.photosFailed > 0 && (
-          <Alert>
-            {result.photosFailed} photo file(s) could not be removed from storage. Delete them by hand in Supabase &gt; Storage &gt; sighting-photos.
-          </Alert>
-        )}
-        {result && result.identifications === null && (
-          <Alert>The identification log could not be cleared. Check that its migration has been run.</Alert>
-        )}
       </div>
     </Panel>
   );

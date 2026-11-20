@@ -16,7 +16,6 @@ const STATUS = {
 const SOURCE = {
   gps: 'Device GPS',
   map: 'Picked on the map',
-  demo: 'Demo location (user testing - not a real place)',
 };
 
 const AMBER = { color: '#b45309', fillColor: '#fbbf24', fillOpacity: 0.9, weight: 2 };
@@ -136,7 +135,7 @@ export default function SightingDetails({ sighting: s, species, submitter, busy,
                   {copied ? 'Copied' : 'Copy'}
                 </button>
               </div>
-              <p className={`text-xs flex items-center gap-1.5 ${s.location_source === 'demo' ? 'text-amber-300' : 'text-slate-400'}`}>
+              <p className="text-xs flex items-center gap-1.5 text-slate-400">
                 <MapPin className="w-3.5 h-3.5" /> {SOURCE[s.location_source] || s.location_source}
               </p>
               <div className="flex flex-wrap gap-3 text-xs">

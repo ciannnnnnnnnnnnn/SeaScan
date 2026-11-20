@@ -7,7 +7,7 @@ import { ScrollText, Download, RefreshCw } from 'lucide-react';
 import { fetchAuditLog, downloadCsv } from '../../lib/api';
 import { Panel, Alert, buttonClass } from './PortalShell';
 
-const TABLES = ['species', 'stations', 'station_species', 'profiles', 'sightings', 'feedback', 'community_questions', 'test_session_data'];
+const TABLES = ['species', 'stations', 'station_species', 'profiles', 'sightings', 'feedback', 'community_questions'];
 const ACTIONS = ['insert', 'update', 'delete', 'review', 'role_change', 'bulk_delete'];
 const ACTION_STYLE = {
   insert: 'text-emerald-300', update: 'text-cyan-300', review: 'text-teal-300',

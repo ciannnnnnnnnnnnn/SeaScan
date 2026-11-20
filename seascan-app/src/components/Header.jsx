@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LogIn, LogOut, ShieldCheck, Microscope, Code2, Leaf, Menu, X, UserRound } from 'lucide-react';
+import { LogIn, LogOut, ShieldCheck, Microscope, Leaf, Menu, X, UserRound } from 'lucide-react';
 import { useAuth, accountLabel } from '../context/AuthContext';
 import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
@@ -23,7 +23,6 @@ export default function Header() {
     // Each role sees only its own portal - no cross-portal access
     ...(user?.role === 'admin' ? [{ name: 'Admin Panel', path: '/admin', icon: ShieldCheck }] : []),
     ...(user?.role === 'researcher' ? [{ name: 'Researcher Panel', path: '/researcher', icon: Microscope }] : []),
-    ...(user?.role === 'developer' ? [{ name: 'Dev Console', path: '/developers', icon: Code2 }] : []),
     ...(user?.role === 'community' ? [{ name: 'Community Hub', path: '/community', icon: Leaf }] : []),
     // Every signed-in user, whatever their role.
     ...(user ? [{ name: 'My Account', path: '/account', icon: UserRound }] : []),

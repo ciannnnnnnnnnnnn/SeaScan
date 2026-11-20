@@ -37,7 +37,7 @@ function ClickToPlace({ onPick }) {
 
 // Leaflet measures its box once. Inside a drawer that is still sliding in the
 // box is 0 px wide, so tiles never load: re-measure once the animation ends.
-// Also bring the pin into view when it is set from GPS or the demo button.
+// Also bring the pin into view when it is set from GPS.
 function KeepInView({ lat, lng, hasPin }) {
   const map = useMap();
   useEffect(() => {

@@ -657,7 +657,6 @@ export default function ScannerPage() {
                           <td className="py-3 pr-4 font-semibold italic text-slate-200">{speciesName(rec.species_id)}</td>
                           <td className="py-3 pr-4 font-mono text-slate-400">
                             {Number(rec.latitude).toFixed(4)}, {Number(rec.longitude).toFixed(4)}
-                            {rec.location_source === 'demo' && <span className="ml-1.5 font-sans text-amber-300/80">(demo)</span>}
                           </td>
                           <td className="py-3 pr-4 text-slate-500">{rec.observed_on}</td>
                           <td className="py-3">

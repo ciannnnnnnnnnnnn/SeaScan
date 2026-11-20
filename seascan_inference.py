@@ -12,7 +12,7 @@ The enhancement is a line-by-line port of
 seascan-app/src/components/seascanPreprocess.js, including where that code
 stores values as 32-bit floats and how JavaScript rounds (Math.round rounds
 .5 up; numpy rounds to even), so both give the same pixels. Keep the two in
-step: scripts/check_server_inference.py compares them.
+step when either changes.
 
 The models are the trained Keras models converted to ONNX
 (scripts/convert_models_onnx.py) and run with ONNX Runtime, which needs far

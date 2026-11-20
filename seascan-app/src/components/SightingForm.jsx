@@ -2,7 +2,7 @@
 // One sighting form for the whole app (Scanner drawer and Community portal),
 // so validation and saving behave the same everywhere.
 import React, { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, Crosshair, MapPin, RefreshCw, Save, FlaskConical, ImagePlus } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Crosshair, MapPin, RefreshCw, Save, ImagePlus } from 'lucide-react';
 import LocationPicker from './LocationPicker';
 import { useAuth } from '../context/AuthContext';
 import { useCatalog } from '../hooks/useCatalog';
@@ -11,16 +11,12 @@ import { ACCEPT_ATTR, validatePhotoFiles } from '../lib/images';
 
 // Same box the database enforces for sightings (Mati City waters).
 const BOUNDS = { minLat: 6.72, maxLat: 7.08, minLng: 126.08, maxLng: 126.4 };
-// Fixed point used for user testing, so participants never share where they
-// really are. Saved with location_source = 'demo' so it can be filtered out.
-export const DEMO_LOCATION = { lat: '6.870000', lng: '126.260000' };
 
 const today = () => new Date().toISOString().slice(0, 10);
 
 const MODES = [
   { id: 'gps', label: 'My GPS', icon: Crosshair },
   { id: 'map', label: 'Tap the map', icon: MapPin },
-  { id: 'demo', label: 'Demo location', icon: FlaskConical },
 ];
 
 export default function SightingForm({ initialSpeciesId, photoFile, modelConfidence, onSaved, accent = 'teal' }) {
@@ -58,7 +54,6 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
   const chooseMode = (next) => {
     setError(null);
     setMode(next);
-    if (next === 'demo') { setLat(DEMO_LOCATION.lat); setLng(DEMO_LOCATION.lng); return; }
     setLat(''); setLng('');
     if (next === 'gps') readGps();
   };
@@ -100,7 +95,7 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
     const la = Number(lat);
     const ln = Number(lng);
     if (lat === '' || lng === '' || Number.isNaN(la) || Number.isNaN(ln)) {
-      setError('Choose a location: use your GPS, tap the map, or pick the demo location.');
+      setError('Choose a location: use your GPS or tap the map.');
       return;
     }
     if (la < BOUNDS.minLat || la > BOUNDS.maxLat || ln < BOUNDS.minLng || ln > BOUNDS.maxLng) {
@@ -160,7 +155,7 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
 
       <div>
         <span className={label}>Location</span>
-        <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="grid grid-cols-2 gap-2 mb-3">
           {MODES.map((m) => {
             const Icon = m.icon;
             const active = mode === m.id;
@@ -170,7 +165,7 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
                 type="button"
                 onClick={() => chooseMode(m.id)}
                 aria-pressed={active}
-                className={`min-h-11 px-1 py-2 rounded-xl text-xs font-semibold leading-tight text-center flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 border transition-colors ${
+                className={`min-h-11 px-1 py-2 rounded-xl text-xs font-semibold leading-tight text-center flex items-center justify-center gap-1.5 border transition-colors ${
                   active ? 'bg-teal-500/15 border-teal-500/40 text-teal-200' : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
                 }`}
               >
@@ -181,19 +176,13 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
           })}
         </div>
 
-        {mode === 'demo' && (
-          <p className="text-xs text-amber-300/90 mb-3">
-            Demo location for user testing: a fixed point in Pujada Bay, not where you are. It is saved as a demo record.
-          </p>
-        )}
-
         <LocationPicker
           lat={lat}
           lng={lng}
           onPick={(la, ln) => { setMode('map'); setLat(la); setLng(ln); setError(null); }}
         />
         <p className="mt-2 text-xs text-slate-500 font-mono">
-          {lat && lng ? `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)} · ${mode === 'gps' ? 'device GPS' : mode === 'demo' ? 'demo point' : 'picked on map'}` : 'No location chosen yet'}
+          {lat && lng ? `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)} · ${mode === 'gps' ? 'device GPS' : 'picked on map'}` : 'No location chosen yet'}
         </p>
       </div>
 

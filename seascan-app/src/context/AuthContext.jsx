@@ -11,7 +11,6 @@ const AuthContext = createContext(null);
 export const portalPathForRole = (role) => {
   if (role === 'admin') return '/admin';
   if (role === 'researcher') return '/researcher';
-  if (role === 'developer') return '/developers';
   return '/community';
 };
 
@@ -68,7 +67,6 @@ async function buildUser(session) {
     displayName: profile?.display_name || null,
     userType: profile?.user_type || 'other',
     role,
-    isTestAccount: !!profile?.is_test_account,
     permissions,
     jwt: {
       role: claims.user_role || null,

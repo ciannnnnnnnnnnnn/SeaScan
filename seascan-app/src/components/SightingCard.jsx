@@ -12,7 +12,7 @@ const photoCache = new Map();
 
 const formatDate = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 
-export default function SightingCard({ speciesName, submitter, photoPath, observedOn, status = 'community', demo = false }) {
+export default function SightingCard({ speciesName, submitter, photoPath, observedOn, status = 'community' }) {
   const [photo, setPhoto] = useState(() => (photoPath ? photoCache.get(photoPath) : null));
   const [failed, setFailed] = useState(false);
 
@@ -48,7 +48,6 @@ export default function SightingCard({ speciesName, submitter, photoPath, observ
         </p>
         <p className={`text-[10px] font-semibold ${status === 'pending' ? 'text-slate-400' : 'text-emerald-300'}`}>
           {status === 'pending' ? 'Your sighting · pending review' : 'Community-submitted · unverified'}
-          {demo && ' · demo location'}
         </p>
       </div>
     </div>

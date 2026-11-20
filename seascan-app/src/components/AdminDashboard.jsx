@@ -3,7 +3,7 @@
 // the database itself only lets admins make these changes (RLS).
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  LayoutDashboard, ShieldCheck, Leaf, MapPin, Users, Inbox, MessageSquare, Eraser, AlertCircle, ClipboardList, ScrollText, Activity, Cpu,
+  LayoutDashboard, ShieldCheck, Leaf, MapPin, Users, Inbox, MessageSquare, AlertCircle, ClipboardList, ScrollText, Activity, Cpu,
 } from 'lucide-react';
 import AuditLog from './staff/AuditLog';
 import IdentificationLog from './staff/IdentificationLog';
@@ -13,7 +13,7 @@ import { usePortalTool } from './PortalTool';
 import PortalShell, { StatTile } from './staff/PortalShell';
 import SightingsReview from './staff/SightingsReview';
 import SpeciesManager from './staff/SpeciesManager';
-import { StationsManager, UsersManager, TestDataCleanup } from './staff/AdminManagers';
+import { StationsManager, UsersManager } from './staff/AdminManagers';
 import { FeedbackInbox, QuestionsInbox } from './staff/Inboxes';
 import { fetchAllSightings } from '../lib/api';
 import { useCatalog } from '../hooks/useCatalog';
@@ -23,12 +23,11 @@ const TABS = [
   { id: 'sightings', label: 'Sighting Review', icon: ShieldCheck, permission: 'sightings.review', heading: 'Sighting Review', description: 'Approve, reject or delete community sightings.' },
   { id: 'species', label: 'Species', icon: Leaf, permission: 'species.manage', heading: 'Species Catalogue', description: 'Digital Library content for the nine species.' },
   { id: 'stations', label: 'Stations', icon: MapPin, permission: 'stations.manage', heading: 'Survey Stations', description: 'Verified stations and the species recorded at each.' },
-  { id: 'users', label: 'Users & Roles', icon: Users, permission: 'users.manage', heading: 'Users and Roles', description: 'Assign researcher or admin roles and mark test accounts.' },
+  { id: 'users', label: 'Users & Roles', icon: Users, permission: 'users.manage', heading: 'Users and Roles', description: 'Assign researcher or admin roles.' },
   { id: 'feedback', label: 'Feedback', icon: Inbox, permission: 'feedback.read', heading: 'User Feedback', description: 'Messages sent from the Help page.' },
   { id: 'questions', label: 'Questions', icon: MessageSquare, permission: 'questions.answer', heading: 'Community Questions', description: 'Questions from the Community portal.' },
   { id: 'model', label: 'CNN Model', icon: Cpu, permission: 'model.manage', heading: 'CNN Model Management', description: 'Deployed models, test results, the server-side service and identification settings.' },
   { id: 'identifications', label: 'Identifications', icon: Activity, permission: 'identifications.read', heading: 'Identification Log', description: 'What the Scanner answered and how long it took. No photos or accounts are stored.' },
-  { id: 'cleanup', label: 'Test Data', icon: Eraser, permission: 'testdata.delete', heading: 'Evaluation Session Data', description: 'Remove data created during user testing.' },
   { id: 'audit', label: 'Audit Log', icon: ScrollText, permission: 'audit.read', heading: 'Audit Log', description: 'Who changed what, and when.' },
 ];
 
@@ -98,7 +97,6 @@ export default function AdminDashboard() {
       {activeTab === 'questions' && <QuestionsInbox />}
       {activeTab === 'model' && <ModelManager />}
       {activeTab === 'identifications' && <IdentificationLog />}
-      {activeTab === 'cleanup' && <TestDataCleanup />}
       {activeTab === 'audit' && <AuditLog />}
     </PortalShell>
   );

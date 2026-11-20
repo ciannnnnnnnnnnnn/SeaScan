@@ -43,6 +43,12 @@
       Flask API writes to (what the Scanner answered and how long it took; no photos)
    12. `supabase/migrations/20261112000100_account_model_realtime.sql`: scan history for
       My Account, the CNN model settings admins can change, and real-time updates
+   13. `supabase/migrations/20261120000100_station_location.sql`: a location line for each station
+   14. `supabase/migrations/20261120000200_sighting_public_sharing.sql`: lets users show their
+      nickname and photo with an approved sighting on the map
+   15. `supabase/migrations/20261120000300_remove_developer_and_test_data.sql`: removes the
+      developer role, test accounts and the demo location, and deletes the data they produced
+      (read the note at the top of the file before running it)
 
    Running a file twice is safe. If you ever re-run an earlier file, run file 8 again afterwards
    (it upgrades the rules that the earlier files define). File 9 **overwrites** the species and
@@ -72,8 +78,8 @@
    - **Site URL**: `http://localhost:5173` for now; change it to your Vercel URL in step 7.
    - **Redirect URLs**: add `http://localhost:5173` and, later, your Vercel URL.
 
-   **Authentication → Sign In / Providers → Email**: keep *Confirm email* ON for real users.
-   Test accounts are created already confirmed (step 6), so they need no inbox.
+   **Authentication → Sign In / Providers**: keep *Confirm email* ON. For the emails to reach
+   users, set up custom SMTP in **Authentication → Emails → SMTP Settings**.
 
    ## 4. Connect the app (you)
 
@@ -103,35 +109,11 @@
    3. In the app, log out and back in. You land on the Admin panel. From now on you can
       change everyone's role in **Admin → Users & Roles**; no more SQL is needed.
 
-   ## 6. Test accounts for user testing, one per role (you)
+   ## 6. Accounts and roles (you)
 
-   1. **Authentication → Users → Add user → Create new user**, tick **Auto Confirm User**.
-      Create these, each with its own password:
-      - `test.student@seascan.test`
-      - `test.tourist@seascan.test`
-      - `test.researcher@seascan.test`
-      - `test.admin@seascan.test`
-   2. In **SQL Editor** run:
-      ```sql
-      update public.profiles p
-      set role = case u.email
-                  when 'test.researcher@seascan.test' then 'researcher'
-                  when 'test.admin@seascan.test'      then 'admin'
-                  else 'community' end,
-         user_type = case u.email
-                  when 'test.student@seascan.test' then 'student'
-                  when 'test.tourist@seascan.test' then 'tourist'
-                  else 'other' end,
-         is_test_account = true
-      from auth.users u
-      where u.id = p.id and u.email like 'test.%@seascan.test';
-      ```
-   3. Give participants these accounts. No names are collected. During sessions, have them
-      choose **Demo location** when recording a sighting.
-   4. **After the sessions**: Admin → **Test Data** → choose the session dates → **Delete test
-      data**. This removes everything the test accounts created, their photos, and the
-      anonymous feedback from that window. You can also delete the test accounts themselves
-      in Authentication → Users.
+   SeaScan has three roles: **community** (every new account), **researcher** and **admin**.
+   An admin changes roles in **Admin → Users & Roles**. To delete an account, use
+   **Authentication → Users** in Supabase.
 
    ## 7. Deploy the web app on Vercel (you)
 
@@ -159,7 +141,7 @@
    ```
 
    If you replace a model with a retrained one, also rename its output folder (e.g. `_f16_v2`
-   in `scripts/quantize_models.mjs`, `src/components/seagrassModel.js`, `scripts/evaluate_models.mjs`, `scripts/test_models.mjs`
+   in `scripts/quantize_models.mjs`, `src/components/seagrassModel.js`, `scripts/evaluate_models.mjs`
    and `MODEL_FOLDERS` in `app.py`), or users may keep the old cached version for up to a week.
 
    ## 8. Deploy the Flask backend API on Render (you)
@@ -195,7 +177,7 @@
    Render's free tier sleeps after about 15 minutes without requests, and waking takes up to a
    minute. The web app does not wait for it: if the API has not answered within 2.5 seconds it
    reads the same data straight from Supabase and tries the API again a minute later. A result
-   scanned while the API is asleep may not be logged. Before a user-testing session, open the
+   scanned while the API is asleep may not be logged. Before a demonstration, open the
    `/api/health` link once to wake it.
 
    To run it on your PC: `pip install -r requirements.txt`, then `python app.py`
@@ -211,7 +193,6 @@
    ```powershell
    pip install "tensorflow==2.20.*" "keras==3.13.2" tf2onnx onnx onnxruntime pillow
    python scripts/convert_models_onnx.py        # writes server_models/
-   python scripts/check_server_inference.py     # server vs browser: preprocessing and test set
    ```
 
    The `.keras` files are not committed (35 MB each); keep your own copy.

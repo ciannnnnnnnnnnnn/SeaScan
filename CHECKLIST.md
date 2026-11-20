@@ -41,7 +41,7 @@ How it was tested:
 |---|---|---|---|
 | R3.1 | DONE | Leaflet + OpenStreetMap, locked to Mati City; reads Supabase directly (no localhost API) | Open the map |
 | R3.2 | NEEDS DATA | 10 stations seeded by name with their source(s); no invented coordinates. Unpinned stations are listed beside the map | Admin → Stations: enter coordinates and species from the papers; pins appear |
-| R3.3 | DONE | Species, location by device GPS, map tap or **Demo location**, date, notes, optional photo | Scanner → Record This Sighting, or Community Hub → Record a Sighting |
+| R3.3 | DONE | Species, location by device GPS or map tap, date, notes, optional photo | Scanner → Record This Sighting, or Community Hub → Record a Sighting |
 | R3.4 | DONE | Gold pins labelled "Community-submitted, unverified"; own pending sightings in grey (visible only to you) | Approve a sighting, then view the map logged out |
 | R3.5 | DONE | Researchers and admins approve, reject (with note) or delete; enforced by RLS | Researcher panel → Sighting Review |
 | R3.6 | DONE · NEEDS DATA | Species richness per station (marker size and ranked list) and a species filter | Link species to stations, then use the filter |
@@ -52,13 +52,12 @@ How it was tested:
 |---|---|---|---|
 | R4.1 | DONE · TEST | No sideways scrolling at phone width on all public pages and the Admin panel; portals get a slide-in menu on phones. Tested in Chrome only | Try Safari (iPhone), Firefox and Edge |
 | R4.2 | DONE | Scanner, Digital Library, public viewer (Home), Login modal, Admin panel, Researcher panel, plus Help and About the model | Click through the menu |
-| R4.3 | DONE · YOU | Roles `community` (user type student/tourist/fisherfolk/other), `researcher`, `admin` (+ `developer` for the existing portal) in `profiles`. RLS on **every** table and on storage; users cannot change their own role | Run migrations, log in with each test account |
-| R4.4 | DONE | Admin: species create/edit/delete with photo upload, stations and their species, users and roles, sighting review, feedback, delete test-session data | Admin panel tabs |
+| R4.3 | DONE · YOU | Roles `community` (user type student/tourist/fisherfolk/other), `researcher`, `admin` in `profiles`. RLS on **every** table and on storage; users cannot change their own role | Run migrations, log in with each test account |
+| R4.4 | DONE | Admin: species create/edit/delete with photo upload, stations and their species, users and roles, sighting review, feedback | Admin panel tabs |
 | R4.5 | DONE | Researcher: review sightings, CSV export (sightings, feedback, stations), answer community questions | Researcher panel → Export CSV |
 | R4.6 | DONE | Only admins edit species/stations/roles (RLS-tested). Photos private, EXIF stripped. Input validation in forms **and** database checks (Mati bounds, lengths, dates). Only the anon key in the frontend; `.env` untracked; no service-role key anywhere | Try editing a species as a community user: refused |
 | R4.7 | DONE · YOU | Help page: user manual, FAQ, privacy, contact, anonymous feedback form; footer links | Set `VITE_CONTACT_EMAIL`; send feedback; read it in Admin → Feedback |
 | R4.8 | DONE | English UI | — |
-| R4.9 | YOU | SQL in `DEPLOYMENT.md` §6 creates one test account per role, flagged as test accounts | Follow §6 |
 
 ## Objective 5 - Evaluation support
 
@@ -94,5 +93,3 @@ Database tests for these: 17 extra checks (56 total). Browser tests: 14 extra ch
 2. Fill species content and station coordinates and species from the two papers (Admin panel).
 3. Add per-species metrics and the confusion matrix (R5.1).
 4. Test on real phones: speed (R1.8), camera (R1.2), Safari/Firefox/Edge (R4.1).
-5. The Developer portal (not in the manuscript) still shows sample bug reports and feedback;
-   only its system-status card is live. Remove it or keep it as a demo.

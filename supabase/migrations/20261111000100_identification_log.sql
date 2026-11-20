@@ -42,8 +42,4 @@ drop policy if exists "identification_log: staff read" on public.identification_
 create policy "identification_log: staff read" on public.identification_log
   for select to authenticated using (public.has_permission('identifications.read'));
 
-drop policy if exists "identification_log: admin delete" on public.identification_log;
-create policy "identification_log: admin delete" on public.identification_log
-  for delete to authenticated using (public.has_permission('testdata.delete'));
-
--- No update policy: rows are never changed.
+-- No update or delete policy: rows are never changed or removed from the app.

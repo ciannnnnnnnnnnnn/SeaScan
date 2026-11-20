@@ -4,10 +4,9 @@
 -- Roles (profiles.role):
 --   community   public users: students, tourists, fisherfolk (see user_type)
 --   researcher  reviews sightings, exports data
---   admin       manages species, stations, users; deletes test-session data
---   developer   kept for the existing Developer portal; no extra data rights
+--   admin       manages species, stations and users
 -- The role lives in public.profiles so admins can change it from the app.
--- Users can never change their own role or test flag (trigger below).
+-- Users can never change their own role (trigger below).
 -- =============================================================================
 
 create table if not exists public.profiles (
@@ -16,8 +15,7 @@ create table if not exists public.profiles (
   user_type        text not null default 'other'
                      check (user_type in ('student', 'tourist', 'fisherfolk', 'researcher', 'other')),
   role             text not null default 'community'
-                     check (role in ('community', 'researcher', 'admin', 'developer')),
-  is_test_account  boolean not null default false,
+                     check (role in ('community', 'researcher', 'admin')),
   created_at       timestamptz not null default now()
 );
 
@@ -93,14 +91,14 @@ create trigger on_auth_user_created
 -- was previously stored in app_metadata is carried over.
 insert into public.profiles (id, role)
 select u.id,
-       case when u.raw_app_meta_data ->> 'role' in ('community', 'researcher', 'admin', 'developer')
+       case when u.raw_app_meta_data ->> 'role' in ('community', 'researcher', 'admin')
             then u.raw_app_meta_data ->> 'role' else 'community' end
 from auth.users u
 on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------------
--- Only an admin (or the SQL editor / service role) may change role or the
--- test-account flag. Everyone else can only edit display_name and user_type.
+-- Only an admin (or the SQL editor / service role) may change a role.
+-- Everyone else can only edit display_name and user_type.
 -- ---------------------------------------------------------------------------
 create or replace function public.guard_profile_privileges()
 returns trigger
@@ -109,10 +107,10 @@ security definer
 set search_path = ''
 as $$
 begin
-  if (new.role is distinct from old.role or new.is_test_account is distinct from old.is_test_account)
+  if new.role is distinct from old.role
      and auth.uid() is not null          -- null = SQL editor / service role
      and not public.is_admin() then
-    raise exception 'Only an administrator can change roles or the test-account flag.'
+    raise exception 'Only an administrator can change roles.'
       using errcode = '42501';
   end if;
   if new.id is distinct from old.id or new.created_at is distinct from old.created_at then

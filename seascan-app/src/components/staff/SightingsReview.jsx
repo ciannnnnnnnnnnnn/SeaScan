@@ -57,7 +57,7 @@ export default function SightingsReview({ onChanged }) {
 
   const submitterOf = (row) => {
     const u = users?.[row.user_id];
-    if (u) return `${u.email}${u.display_name ? ` (${u.display_name})` : ''} · ${u.role}${u.is_test_account ? ' · test account' : ''}`;
+    if (u) return `${u.email}${u.display_name ? ` (${u.display_name})` : ''} · ${u.role}`;
     return `Community member (account ${row.user_id.slice(0, 8)}…)`;
   };
 
@@ -174,8 +174,8 @@ export default function SightingsReview({ onChanged }) {
                   <td data-label="Location" className="py-3 px-3 font-mono text-slate-400 whitespace-nowrap">
                     <span>
                     {Number(r.latitude).toFixed(5)}, {Number(r.longitude).toFixed(5)}
-                    <span className={`block font-sans mt-0.5 ${r.location_source === 'demo' ? 'text-amber-300/80' : 'text-slate-600'}`}>
-                      {r.location_source === 'gps' ? 'device GPS' : r.location_source === 'map' ? 'picked on map' : 'demo location'}
+                    <span className="block font-sans mt-0.5 text-slate-600">
+                      {r.location_source === 'gps' ? 'device GPS' : 'picked on map'}
                     </span>
                     </span>
                   </td>

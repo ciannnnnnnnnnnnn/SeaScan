@@ -33,7 +33,7 @@ async function viaBackend(path, fromSupabase) {
 export async function fetchProfile(userId) {
   return unwrap(await supabase
     .from('profiles')
-    .select('id, display_name, user_type, role, is_test_account')
+    .select('id, display_name, user_type, role')
     .eq('id', userId)
     .maybeSingle());
 }
@@ -315,35 +315,6 @@ export async function fetchIdentificationLog(limit = 1000) {
   return unwrap(await supabase.from('identification_log')
     .select('id, created_at, outcome, species_label, confidence, gate_score, duration_ms, model_version, device')
     .order('created_at', { ascending: false }).limit(limit));
-}
-
-/**
- * Deletes test-account data in a window, including their photo files, and
- * the identification results logged in that window. `photosFailed` counts
- * photo files that could not be removed from storage.
- */
-export async function deleteTestSessionData(from, to) {
-  const rows = unwrap(await supabase.rpc('delete_test_session_data', { p_from: from, p_to: to }));
-  const paths = rows.map((r) => r.photo_path).filter(Boolean);
-  let photosFailed = 0;
-  if (paths.length) {
-    const { error } = await supabase.storage.from(SIGHTING_PHOTO_BUCKET).remove(paths);
-    if (error) photosFailed = paths.length;
-  }
-  // The log has no account column, so everything in the window is removed.
-  const logged = await supabase.from('identification_log').delete()
-    .gte('created_at', from).lt('created_at', to).select('id');
-  const first = rows[0] || {};
-  return {
-    sightings: first.deleted_sightings ?? 0,
-    questions: first.deleted_questions ?? 0,
-    feedback: first.deleted_feedback ?? 0,
-    scans: first.deleted_scans ?? 0,
-    photos: paths.length - photosFailed,
-    photosFailed,
-    // null = the log could not be cleared (e.g. its migration has not been run).
-    identifications: logged.error ? null : logged.data.length,
-  };
 }
 
 // --------------------------------------------------------------------- CSV
