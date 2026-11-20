@@ -49,6 +49,8 @@
    15. `supabase/migrations/20261120000300_remove_developer_and_test_data.sql`: removes the
       developer role, test accounts and the demo location, and deletes the data they produced
       (read the note at the top of the file before running it)
+   16. `supabase/migrations/20261120000400_species_sources_apa.sql`: writes the species sources as
+      an APA reference list (run it again after re-running file 9)
 
    Running a file twice is safe. If you ever re-run an earlier file, run file 8 again afterwards
    (it upgrades the rules that the earlier files define). File 9 **overwrites** the species and

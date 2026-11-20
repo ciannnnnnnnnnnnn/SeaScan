@@ -28,6 +28,28 @@ const Text = ({ value, className = '' }) => (
   <p className={`text-sm leading-relaxed ${value ? 'text-slate-300' : 'italic text-slate-600'} ${className}`}>{value || TO_BE_ADDED}</p>
 );
 
+// Reference list: one reference per line in the species' "sources" field,
+// written in APA style with *asterisks* around the parts set in italics.
+const ITALIC = /\*([^*]+)\*/g;
+const withItalics = (line) => line.split(ITALIC).map((part, i) => (i % 2 ? <em key={i}>{part}</em> : part));
+// Alphabetical by author, ignoring italics and name particles such as "den".
+const sortKey = (line) => line.replace(/\*/g, '').replace(/^(den|de|van|von|der) /i, '').toLowerCase();
+
+function References({ value }) {
+  const refs = (value || '').split('\n').map((l) => l.trim()).filter(Boolean)
+    // Plain comparison, so "Sanchez, C." comes before "Sanchez-Delute" as APA asks.
+    .sort((a, b) => (sortKey(a) < sortKey(b) ? -1 : sortKey(a) > sortKey(b) ? 1 : 0));
+  if (!refs.length) return <Text value={null} />;
+  return (
+    <ul className="space-y-3 text-sm leading-relaxed text-slate-300 break-words">
+      {refs.map((ref) => (
+        // Hanging indent, as in a printed reference list.
+        <li key={ref} className="pl-4 -indent-4">{withItalics(ref)}</li>
+      ))}
+    </ul>
+  );
+}
+
 export default function SpeciesProfilePage() {
   const { slug } = useParams();
   const { species, loading, error, stationsForSpecies } = useCatalog();
@@ -159,8 +181,7 @@ export default function SpeciesProfilePage() {
         <Reveal><ConservationGuide species={sp} /></Reveal>
 
         <Section icon={BookMarked} title="Sources">
-          {/* One reference per line, as entered. */}
-          <Text value={sp.sources} className="whitespace-pre-line" />
+          <References value={sp.sources} />
         </Section>
       </main>
     </div>

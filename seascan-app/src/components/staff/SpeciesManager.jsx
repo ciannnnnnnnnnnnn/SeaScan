@@ -28,7 +28,7 @@ const LONG_FIELDS = [
   ['ecosystem_contribution', 'Conservation guide: what it contributes to the ecosystem'],
   ['geographic_distribution', 'Geographic distribution'],
   ['local_distribution_note', 'Notes for Pujada Bay / Mati City'],
-  ['sources', 'Sources (citations)'],
+  ['sources', 'Sources: one APA reference per line, *asterisks* around italics'],
 ];
 
 const EMPTY = { scientific_name: '', slug: '', model_label: '', conservation_tips: [], needs_review: true };
