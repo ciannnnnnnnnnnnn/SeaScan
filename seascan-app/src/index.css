@@ -351,6 +351,15 @@ html {
   font-family: inherit;
 }
 
+/* Dropdown lists: the browser draws the open list itself, and some (Chrome on
+   Windows) keep a white background while the options inherit the app's light
+   text. Give options the app's own colours so they stay readable in both modes. */
+select option {
+  background-color: var(--color-slate-900);
+  color: var(--color-slate-200);
+  font-style: normal;
+}
+
 /* Community sighting hover cards: the app's card style, in light and dark mode. */
 .leaflet-tooltip.sighting-tooltip {
   background: var(--color-slate-900);

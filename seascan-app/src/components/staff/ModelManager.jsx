@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Cpu, Server, SlidersHorizontal, BarChart3, RefreshCw, Save, Wrench } from 'lucide-react';
 import { useModelSettings } from '../../hooks/useModelSettings';
 import { saveModelSettings, fetchIdentificationLog } from '../../lib/api';
-import { backendEnabled, backendGet } from '../../lib/backend';
+import { backendEnabled, backendCheck, backendUrl } from '../../lib/backend';
 import { MODEL_METRICS } from '../../data/modelMetrics';
 import { Panel, Alert, StatTile, inputClass, labelClass, buttonClass } from './PortalShell';
 
@@ -65,7 +65,8 @@ export default function ModelManager() {
     if (!backendEnabled()) { setServer({ configured: false }); return; }
     setServer(null);
     try {
-      const info = await backendGet('/api/model');
+      // Waits up to 75 s, so a sleeping Render server has time to wake.
+      const info = await backendCheck('/api/model');
       setServer({ configured: true, reachable: true, ...info.server });
     } catch {
       setServer({ configured: true, reachable: false });
@@ -143,9 +144,21 @@ export default function ModelManager() {
       <Panel icon={Server} title="Server-side identification service"
         description="Flask API (app.py) with the same models in ONNX format. Used when a device cannot run the models; photos are processed in memory and not stored."
         actions={<button onClick={checkServer} className={`${buttonClass} bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-1.5`}><RefreshCw className="w-3.5 h-3.5" /> Check again</button>}>
-        {server === null ? <p className="text-sm text-slate-500">Checking…</p>
+        {server === null ? (
+          <p className="text-sm text-slate-500 flex items-center gap-2">
+            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+            Contacting {backendUrl()}… If the server was asleep, waking it takes up to a minute.
+          </p>
+        )
           : !server.configured ? <Alert>The web app has no VITE_API_URL, so the server cannot be used. See DEPLOYMENT.md, step 8.</Alert>
-          : !server.reachable ? <Alert>The SeaScan API did not answer. On Render's free plan it sleeps when idle; it wakes on the next request (up to a minute).</Alert>
+          : !server.reachable ? (
+            <Alert>
+              The SeaScan API at {backendUrl()} did not answer within 75 seconds.
+              {/localhost|127\.0\.0\.1/.test(backendUrl())
+                ? ' This copy of the app uses the API on this computer: start it with "python app.py", or point VITE_API_URL in seascan-app/.env to the Render address.'
+                : ' Check that the Render service is running (Render dashboard > seascan-api > Logs) and that ALLOWED_ORIGINS includes this site\'s address.'}
+            </Alert>
+          )
           : (
             <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-sm">
               <dt className="text-slate-500">Status</dt>

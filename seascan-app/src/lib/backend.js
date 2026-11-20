@@ -39,6 +39,30 @@ export async function backendGet(path) {
 
 // A sleeping free-tier server can take close to a minute to wake up.
 const IDENTIFY_TIMEOUT_MS = 90000;
+const WAKE_TIMEOUT_MS = 75000;
+
+/**
+ * GET a JSON resource, waiting long enough for a sleeping server to wake.
+ * For explicit checks (Admin > CNN Model): it always tries, even right after a
+ * failure, and a success lets the quick readers (backendGet) use the API again.
+ */
+export async function backendCheck(path) {
+  if (!API_URL) throw new Error('The SeaScan API is not configured.');
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), WAKE_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${API_URL}${path}`, { signal: controller.signal, cache: 'no-store' });
+    if (!res.ok) throw new Error(`The SeaScan API answered ${res.status}.`);
+    const body = await res.json();
+    skipUntil = 0;
+    return body;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** The API address the app uses (for messages). */
+export const backendUrl = () => API_URL;
 
 /**
  * Server-side identification, for devices that cannot run the models. Sends
