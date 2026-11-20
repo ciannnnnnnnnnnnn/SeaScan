@@ -123,7 +123,7 @@ def _model_settings():
 MODELS = _model_settings()
 SPECIES_LABELS = set((MODELS.get("species") or {}).get("class_names", []))
 
-STATION_COLUMNS = "id,name,latitude,longitude,sources,notes,station_species(species_id,source)"
+STATION_COLUMNS = "*,station_species(species_id,source)"  # * includes location once its migration has run
 SLUG = re.compile(r"^[a-z0-9-]{1,80}$")
 
 # Simple per-address limits for the write endpoints. Kept in memory, which is

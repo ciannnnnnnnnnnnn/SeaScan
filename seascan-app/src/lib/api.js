@@ -147,7 +147,7 @@ export async function uploadSpeciesPhoto(file, slug) {
 export async function fetchStations() {
   return viaBackend('/api/map/verified-stations', async () => unwrap(await supabase
     .from('stations')
-    .select('id, name, latitude, longitude, sources, notes, station_species(species_id, source)')
+    .select('*, station_species(species_id, source)') // * includes location once its migration has run
     .order('name')));
 }
 

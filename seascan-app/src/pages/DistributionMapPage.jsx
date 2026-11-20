@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCatalog } from '../hooks/useCatalog';
 import { fetchMySightings, fetchPublicSightings } from '../lib/api';
 import SightingForm from '../components/SightingForm';
+import StationPopup from '../components/StationPopup';
 
 const coloredIcon = (color) => new L.Icon({
   iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
@@ -88,8 +89,6 @@ export default function DistributionMapPage() {
     if (map) map.flyToBounds(MATI_BOUNDS, { duration: 0.6 });
   };
 
-  const sourcesFor = (st, speciesId) =>
-    (st.station_species || []).filter((l) => l.species_id === speciesId).map((l) => l.source).join('; ');
 
   return (
     <div className="bg-slate-950 text-slate-100 font-sans antialiased flex flex-col">
@@ -202,22 +201,8 @@ export default function DistributionMapPage() {
                         pathOptions={{ color: '#0e7490', fillColor: '#22d3ee', fillOpacity: 0.75, weight: 2 }}
                       >
                         <Tooltip>{st.name} · {st.richness} species</Tooltip>
-                        <Popup>
-                          <div style={{ minWidth: 200 }}>
-                            <h4 style={{ margin: '0 0 4px 0' }}>{st.name}</h4>
-                            <p style={{ margin: '2px 0', fontSize: 12 }}><strong>Verified survey station</strong></p>
-                            <p style={{ margin: '2px 0', fontSize: 12 }}><strong>Source:</strong> {st.sources.join('; ') || '—'}</p>
-                            <p style={{ margin: '6px 0 2px', fontSize: 12 }}><strong>Species richness:</strong> {st.richness}</p>
-                            {st.speciesIds.length ? (
-                              <ul style={{ margin: '2px 0 0 16px', padding: 0, fontSize: 12 }}>
-                                {st.speciesIds.map((id) => (
-                                  <li key={id}><em>{speciesById(id)?.scientific_name}</em> <span style={{ color: '#64748b' }}>({sourcesFor(st, id)})</span></li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p style={{ margin: '2px 0', fontSize: 12, fontStyle: 'italic' }}>Species list to be added</p>
-                            )}
-                          </div>
+                        <Popup className="station-popup" maxWidth={300} minWidth={260} maxHeight={500} autoPanPadding={[16, 16]}>
+                          <StationPopup station={st} speciesById={speciesById} />
                         </Popup>
                       </CircleMarker>
                     ))}

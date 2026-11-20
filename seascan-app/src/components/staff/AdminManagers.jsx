@@ -25,8 +25,13 @@ export function StationsManager() {
     setError(null);
     setNotice(null);
     setForm(st
-      ? { id: st.id, name: st.name, latitude: st.latitude ?? '', longitude: st.longitude ?? '', sourcesText: st.sources.join('\n'), notes: st.notes || '' }
-      : { name: '', latitude: '', longitude: '', sourcesText: '', notes: '' });
+      ? {
+        id: st.id, name: st.name, location: st.location || '', latitude: st.latitude ?? '', longitude: st.longitude ?? '',
+        sourcesText: st.sources.join('\n'), notes: st.notes || '',
+        // The location column exists only after migration 20261120000100.
+        hasLocationColumn: 'location' in st,
+      }
+      : { name: '', location: '', latitude: '', longitude: '', sourcesText: '', notes: '', hasLocationColumn: 'location' in (stations[0] || {}) });
     setLink({ speciesId: '', source: st?.sources?.[0] || '' });
   };
 
@@ -44,6 +49,7 @@ export function StationsManager() {
         longitude: hasLng ? Number(form.longitude) : null,
         sources: form.sourcesText.split('\n').map((s) => s.trim()).filter(Boolean),
         notes: form.notes.trim() || null,
+        ...(form.hasLocationColumn || form.location.trim() ? { location: form.location.trim() || null } : {}),
       });
       await refreshCatalog();
       setForm((f) => ({ ...f, id: saved.id }));
@@ -94,6 +100,12 @@ export function StationsManager() {
               <div>
                 <label className={labelClass}>Station name *</label>
                 <input className={inputClass} required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              </div>
+              <div>
+                <label className={labelClass}>Location (road, barangay, beach or resort)</label>
+                <input className={inputClass} maxLength={200} value={form.location} placeholder="e.g. Barangay Dahican, near the public beach"
+                  onChange={(e) => setForm({ ...form, location: e.target.value })} />
+                <p className="text-xs text-slate-500 mt-1">Shown under the station name in the map popup. Use the place as described in the source study.</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
