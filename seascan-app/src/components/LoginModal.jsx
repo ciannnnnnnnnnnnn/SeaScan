@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { X, Lock, Mail, User, Compass, Waves, CheckCircle2, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth, portalPathForRole, USER_TYPES } from '../context/AuthContext';
 
@@ -292,6 +292,17 @@ const LoginModal = () => {
                   />
                 </div>
               </div>
+
+              {/* Privacy notice at the point where personal data is given. */}
+              <p className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
+                <Lock className="inline w-3.5 h-3.5 mr-1 -mt-0.5 text-teal-400" />
+                SeaScan stores only your email, password and optional nickname. Your scan history and
+                sightings are visible only to you and the research team, and photos are stored privately
+                with hidden location data removed.{' '}
+                <Link to="/help#privacy" onClick={closeAuthModal} className="text-teal-300 hover:text-teal-200 underline">
+                  Read the privacy notice
+                </Link>
+              </p>
 
               <button
                 type="submit"

@@ -1,6 +1,7 @@
 // src/pages/CommunityPortal.jsx
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import ErrorBoundary from '../components/ErrorBoundary';
 import {
   LayoutDashboard,
   ClipboardList,
@@ -197,6 +198,8 @@ export default function CommunityPortal() {
           <span className="text-sm font-bold text-white">Community Hub</span>
         </div>
 
+        {/* A crash in one tab shows an error card there; the sidebar keeps working. */}
+        <ErrorBoundary resetKey={`${activeTab}|${tool ? 'tool' : ''}`} showHomeLink={false}>
         {tool || (
           <>
             <div className="md:sticky md:top-0 z-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5">
@@ -528,6 +531,7 @@ export default function CommunityPortal() {
             </div>
           </>
         )}
+        </ErrorBoundary>
       </main>
     </div>
   );

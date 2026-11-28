@@ -25,6 +25,7 @@ import DetectionOverlay from './DetectionOverlay';
 import CameraCapture, { cameraSupported } from './CameraCapture';
 import SightingForm from './SightingForm';
 import { Fact, ConservationGuide, ReviewNotice } from './SpeciesFacts';
+import { checkPhotoQuality } from './photoQuality';
 import { loadSeagrassModel, identifyPhoto, browserCanIdentify, serverAvailable, MODEL_VERSION } from './seagrassModel';
 import { logIdentification } from '../lib/backend';
 import { saveScan } from '../lib/api';
@@ -36,6 +37,51 @@ const STATUS_CHIP = {
   approved: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
   rejected: 'bg-rose-500/10 text-rose-300 border-rose-500/25',
 };
+
+/** Advice for a photo that failed the quality check, before any identification. */
+function QualityAdvice({ issue, canUseCamera, onRetake, onPickAnother, onIdentifyAnyway }) {
+  const problems = [
+    issue.tooDark && { title: 'too dark', tip: 'Take it in daylight, or move so the sun is behind you and not behind the plant.' },
+    issue.tooBright && { title: 'too bright', tip: 'Avoid direct glare on the water: shade the plant or change the angle.' },
+    issue.blurry && { title: 'blurry', tip: 'Hold the phone still, tap the screen on the leaves to focus, and wait a moment before taking it.' },
+  ].filter(Boolean);
+  const title = problems.map((p) => p.title).join(' and ');
+  return (
+    <div className="h-full bg-slate-900 rounded-2xl border border-slate-800 p-6">
+      <div className="rounded-2xl border-2 border-amber-500/50 bg-amber-500/10 p-6 space-y-4" role="alert">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/25">
+          <AlertCircle className="w-3.5 h-3.5" />
+          Check the photo
+        </span>
+        <h3 className="text-xl sm:text-2xl font-extrabold text-white">This photo looks {title}</h3>
+        <p className="text-sm text-slate-300 leading-relaxed">
+          SeaScan cannot identify seagrass reliably from this photo, so it was not identified yet. For a better result:
+        </p>
+        <ul className="space-y-1.5 text-sm text-slate-300 list-disc pl-5">
+          {problems.map((p) => <li key={p.title}>{p.tip}</li>)}
+          <li>Get close, so the leaves fill most of the frame.</li>
+        </ul>
+        <div className="flex flex-wrap gap-2 pt-1">
+          {canUseCamera ? (
+            <button type="button" onClick={onRetake}
+              className="px-4 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-sm font-bold flex items-center gap-2 transition-colors">
+              <Camera className="w-4 h-4" /> Retake the photo
+            </button>
+          ) : (
+            <label className="cursor-pointer px-4 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-sm font-bold flex items-center gap-2 transition-colors">
+              <Upload className="w-4 h-4" /> Choose another photo
+              <input type="file" accept={ACCEPT_ATTR} className="hidden" onChange={onPickAnother} />
+            </label>
+          )}
+          <button type="button" onClick={onIdentifyAnyway}
+            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-semibold transition-colors">
+            Identify anyway
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ScannerPage() {
   const { user, openAuthModal } = useAuth();
@@ -50,6 +96,8 @@ export default function ScannerPage() {
   const [imageAspect, setImageAspect] = useState(null);
   const [scanResult, setScanResult] = useState(null);
   const [scanError, setScanError] = useState(null);
+  // Too dark, too bright or blurry: advice instead of a result (see photoQuality.js).
+  const [qualityIssue, setQualityIssue] = useState(null);
   const [scanMs, setScanMs] = useState(null);
   const [modelStatus, setModelStatus] = useState('loading'); // loading | ready | server | error
   const { settings: modelSettings, loaded: settingsLoaded } = useModelSettings();
@@ -133,12 +181,26 @@ export default function ScannerPage() {
 
   // Run the models on the photo. scanIdRef drops results from an older photo
   // if the user replaced it while the model was still working.
-  const triggerScan = async (url, file) => {
+  const triggerScan = async (url, file, { skipQualityCheck = false } = {}) => {
     const scanId = ++scanIdRef.current;
     setIsScanning(true);
     setHasScanned(false);
     setScanResult(null);
     setScanError(null);
+    setQualityIssue(null);
+
+    // A photo the model cannot judge well gets advice first; "Identify anyway"
+    // runs the models on it regardless.
+    if (!skipQualityCheck) {
+      const quality = await checkPhotoQuality(url);
+      if (scanId !== scanIdRef.current) return;
+      if (!quality.ok) {
+        setQualityIssue(quality);
+        setIsScanning(false);
+        return;
+      }
+    }
+
     const started = performance.now();
     try {
       const result = await identifyPhoto({ url, file, settings: modelSettings });
@@ -177,6 +239,7 @@ export default function ScannerPage() {
     setHasScanned(false);
     setScanResult(null);
     setScanError(null);
+    setQualityIssue(null);
     setIsScanning(false);
   };
 
@@ -220,7 +283,10 @@ export default function ScannerPage() {
             seagrasses of Pujada Bay.{' '}
             {modelStatus === 'server'
               ? 'This device cannot run the identification model, so your photo is sent to the SeaScan server, identified there and not stored.'
-              : 'Your photo is analysed on this device and is not uploaded.'}
+              : 'Your photo is analysed on this device and is not uploaded.'}{' '}
+            <Link to="/help#privacy" className="text-teal-300 hover:text-teal-200 underline underline-offset-2">
+              How SeaScan uses your photos and data
+            </Link>
           </p>
           {modelStatus === 'loading' && (
             <p className="text-xs text-slate-500 mt-3 flex items-center gap-1.5">
@@ -385,6 +451,14 @@ export default function ScannerPage() {
                   <div className="skeleton h-16 rounded-xl" />
                 </div>
               </div>
+            ) : qualityIssue ? (
+              <QualityAdvice
+                issue={qualityIssue}
+                canUseCamera={canUseCamera}
+                onRetake={() => setShowCamera(true)}
+                onPickAnother={handleImageUpload}
+                onIdentifyAnyway={() => triggerScan(selectedImage, imageFile, { skipQualityCheck: true })}
+              />
             ) : hasScanned ? (
               <div className="stagger bg-slate-900 rounded-2xl border border-slate-800 p-6 space-y-6">
 

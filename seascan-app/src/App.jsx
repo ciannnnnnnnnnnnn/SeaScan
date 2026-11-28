@@ -6,6 +6,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
+import OfflineBanner from './components/OfflineBanner';
 
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -62,6 +64,8 @@ function AppShell() {
 
       <main className="flex-1 flex flex-col min-h-0">
         <div key={section} className="page-enter flex-1 flex flex-col min-h-0">
+        {/* A crash in one page shows an error card there; header and footer stay. */}
+        <ErrorBoundary resetKey={location.pathname}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/scanner" element={<ScannerPage />} />
@@ -108,10 +112,12 @@ function AppShell() {
           />
           <Route path="*" element={<HomePage />} />
         </Routes>
+        </ErrorBoundary>
         </div>
       </main>
 
       <LoginModal />
+      <OfflineBanner />
 
       {showGlobalFooter && <Footer />}
     </div>

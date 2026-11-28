@@ -8,6 +8,7 @@ import { useAuth, accountLabel } from '../../context/AuthContext';
 import PortalSiteLinks from '../PortalSiteLinks';
 import ThemeToggle from '../ThemeToggle';
 import Logo from '../Logo';
+import ErrorBoundary from '../ErrorBoundary';
 
 // Literal class strings so Tailwind can see them.
 const ACCENTS = {
@@ -114,6 +115,8 @@ export default function PortalShell({ base, title, subtitle, accent = 'teal', ta
           <span className="min-w-0 truncate text-sm font-semibold text-white">{title}</span>
         </div>
 
+        {/* A crash in one tab shows an error card there; the sidebar keeps working. */}
+        <ErrorBoundary resetKey={`${activeTab}|${tool ? 'tool' : ''}`} showHomeLink={false}>
         {tool || (
           <>
             <div className="md:sticky md:top-0 z-20 border-b border-slate-800 bg-slate-950/80 px-4 md:px-8 py-4 md:py-5">
@@ -123,6 +126,7 @@ export default function PortalShell({ base, title, subtitle, accent = 'teal', ta
             <div className="p-4 md:p-8 space-y-6 max-w-7xl">{children}</div>
           </>
         )}
+        </ErrorBoundary>
       </main>
     </div>
   );

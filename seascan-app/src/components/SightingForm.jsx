@@ -1,18 +1,38 @@
 // src/components/SightingForm.jsx
 // One sighting form for the whole app (Scanner drawer and Community portal),
 // so validation and saving behave the same everywhere.
-import React, { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, Crosshair, MapPin, RefreshCw, Save, ImagePlus } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AlertCircle, CheckCircle2, Crosshair, MapPin, RefreshCw, Save, ImagePlus, WifiOff } from 'lucide-react';
 import LocationPicker from './LocationPicker';
 import { useAuth } from '../context/AuthContext';
 import { useCatalog } from '../hooks/useCatalog';
 import { submitSighting } from '../lib/api';
 import { ACCEPT_ATTR, validatePhotoFiles } from '../lib/images';
+import { useOnline } from '../hooks/useOnline';
 
 // Same box the database enforces for sightings (Mati City waters).
 const BOUNDS = { minLat: 6.72, maxLat: 7.08, minLng: 126.08, maxLng: 126.4 };
 
 const today = () => new Date().toISOString().slice(0, 10);
+
+// A sighting that could not be sent (no connection) is kept on this device
+// until it is sent, so a reload does not lose what was typed. The photo stays
+// in memory only (too large to keep), so after a reload it must be added again.
+const draftKey = (userId) => `seascan-unsent-sighting-${userId}`;
+const readDraft = (userId) => {
+  try { return JSON.parse(localStorage.getItem(draftKey(userId)) || 'null'); } catch { return null; }
+};
+const writeDraft = (userId, p) => {
+  try {
+    localStorage.setItem(draftKey(userId), JSON.stringify({
+      speciesId: p.speciesId, latitude: p.latitude, longitude: p.longitude, locationSource: p.locationSource,
+      observedOn: p.observedOn, notes: p.notes, sharePublicly: p.sharePublicly, hadPhoto: !!p.photoFile,
+    }));
+  } catch { /* storage unavailable: the sighting is still kept while the page is open */ }
+};
+const clearDraft = (userId) => { try { localStorage.removeItem(draftKey(userId)); } catch { /* ignore */ } };
+// Errors that mean "no connection" rather than "the server said no".
+const isConnectionError = (err) => !navigator.onLine || /failed to fetch|networkerror|network request failed|load failed/i.test(err?.message || '');
 
 const MODES = [
   { id: 'gps', label: 'My GPS', icon: Crosshair },
@@ -23,19 +43,27 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
   const { user } = useAuth();
   const { species } = useCatalog();
 
-  const [speciesId, setSpeciesId] = useState(initialSpeciesId ?? '');
-  const [mode, setMode] = useState('map');
-  const [lat, setLat] = useState('');
-  const [lng, setLng] = useState('');
-  const [observedOn, setObservedOn] = useState(today());
-  const [notes, setNotes] = useState('');
+  // An unsent sighting from earlier on this device, restored into the form.
+  const [draft] = useState(() => (user ? readDraft(user.id) : null));
+  const [speciesId, setSpeciesId] = useState(draft ? String(draft.speciesId) : (initialSpeciesId ?? ''));
+  const [mode, setMode] = useState(draft?.locationSource === 'gps' ? 'gps' : 'map');
+  const [lat, setLat] = useState(draft ? String(draft.latitude) : '');
+  const [lng, setLng] = useState(draft ? String(draft.longitude) : '');
+  const [observedOn, setObservedOn] = useState(draft?.observedOn || today());
+  const [notes, setNotes] = useState(draft?.notes || '');
   const [includeScanPhoto, setIncludeScanPhoto] = useState(true);
-  const [sharePublicly, setSharePublicly] = useState(false);
+  const [sharePublicly, setSharePublicly] = useState(!!draft?.sharePublicly);
   const [pickedPhoto, setPickedPhoto] = useState(null);
   const [locating, setLocating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [notice, setNotice] = useState(null);
+  const [notice, setNotice] = useState(draft
+    ? `Your unsent sighting from earlier was restored${draft.hadPhoto ? '; add its photo again' : ''}. Check it, then press Submit sighting.`
+    : null);
+  // Waiting for the connection: the sighting (with its photo) is kept here.
+  const pendingRef = useRef(null);
+  const [waiting, setWaiting] = useState(false);
+  const online = useOnline();
 
   useEffect(() => {
     if (!speciesId && species.length) setSpeciesId(initialSpeciesId ?? species[0].id);
@@ -103,33 +131,64 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
       return;
     }
     if (!speciesId) { setError('Choose the species.'); return; }
+    if (!observedOn) { setError('Choose the date you saw it.'); return; }
     if (observedOn > today()) { setError('The date cannot be in the future.'); return; }
 
+    const payload = {
+      userId: user.id,
+      speciesId: Number(speciesId),
+      latitude: la,
+      longitude: ln,
+      locationSource: mode,
+      observedOn,
+      notes,
+      photoFile: photoFile && includeScanPhoto ? photoFile : pickedPhoto,
+      modelConfidence,
+      sharePublicly,
+    };
+    if (!navigator.onLine) keepForLater(payload);
+    else send(payload);
+  };
+
+  const keepForLater = (payload) => {
+    pendingRef.current = payload;
+    writeDraft(user.id, payload);
+    setWaiting(true);
+    setNotice(null);
+  };
+
+  const send = async (payload) => {
     setSaving(true);
+    setError(null);
     try {
-      await submitSighting({
-        userId: user.id,
-        speciesId: Number(speciesId),
-        latitude: la,
-        longitude: ln,
-        locationSource: mode,
-        observedOn,
-        notes,
-        photoFile: photoFile && includeScanPhoto ? photoFile : pickedPhoto,
-        modelConfidence,
-        sharePublicly,
-      });
+      await submitSighting(payload);
+      pendingRef.current = null;
+      setWaiting(false);
+      clearDraft(user.id);
       setNotice('Sighting submitted. It will appear on the public map once a researcher approves it.');
       setNotes('');
       setSharePublicly(false); // ask again for the next sighting
       setPickedPhoto(null);
       onSaved?.();
     } catch (err) {
-      setError(`Could not save the sighting: ${err.message}`);
+      if (isConnectionError(err)) keepForLater(payload);
+      else setError(`Could not save the sighting: ${err.message}`);
     } finally {
       setSaving(false);
     }
   };
+
+  const discardPending = () => {
+    pendingRef.current = null;
+    clearDraft(user.id);
+    setWaiting(false);
+  };
+
+  // Send a waiting sighting as soon as the connection is back.
+  useEffect(() => {
+    if (online && waiting && pendingRef.current && !saving) send(pendingRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [online, waiting]);
 
   return (
     <form onSubmit={submit} className="space-y-5">
@@ -137,6 +196,24 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
         <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2" role="alert">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{error}</span>
+        </div>
+      )}
+      {waiting && (
+        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-2" role="status">
+          <p className="flex items-start gap-2">
+            {saving ? <RefreshCw className="w-4 h-4 shrink-0 mt-0.5 animate-spin" /> : <WifiOff className="w-4 h-4 shrink-0 mt-0.5" />}
+            <span>
+              <span className="font-semibold">{saving ? 'Sending your sighting…' : 'No connection. Your sighting is kept, not lost.'}</span>{' '}
+              It is sent automatically when you are back online; keep this page open. If the page is closed,
+              the details are restored next time (add the photo again).
+            </span>
+          </p>
+          <div className="flex gap-2 pl-6">
+            <button type="button" disabled={saving} onClick={() => send(pendingRef.current)}
+              className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 font-semibold disabled:opacity-50">Try now</button>
+            <button type="button" disabled={saving} onClick={discardPending}
+              className="px-3 py-1.5 rounded-lg text-amber-300/80 hover:bg-amber-500/10 font-semibold disabled:opacity-50">Discard</button>
+          </div>
         </div>
       )}
       {notice && (
@@ -237,7 +314,7 @@ export default function SightingForm({ initialSpeciesId, photoFile, modelConfide
         New sightings show as unverified until a researcher reviews them.
       </p>
 
-      <button type="submit" disabled={saving || !species.length}
+      <button type="submit" disabled={saving || waiting || !species.length}
         className={`w-full py-3 rounded-xl ${btn} disabled:opacity-60 text-slate-950 font-semibold text-sm flex items-center justify-center gap-2`}>
         {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
         Submit sighting

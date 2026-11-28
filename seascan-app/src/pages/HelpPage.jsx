@@ -145,7 +145,7 @@ export default function HelpPage() {
             <li>An account needs only an email and password. A nickname is optional; no real name is collected.</li>
             <li>Sighting photos are stored privately, visible only to you and the research team, with hidden metadata removed.</li>
             <li>The public map does not show who submitted a sighting or its photo, unless the submitter ticked "Show my nickname and photo" for that sighting. Only the nickname is shown, never the email.</li>
-            <li>Feedback is anonymous. Data from user-testing sessions is deleted after the sessions.</li>
+            <li>Feedback is anonymous.</li>
           </ul>
         </section>
 
